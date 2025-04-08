@@ -58,7 +58,7 @@
 ```sql
 CREATE TABLE users (
     user_id BIGINT PRIMARY KEY,          -- Telegram ID
-    username VARCHAR(64),               -- @username (опционально)
+    username VARCHAR(64),               -- @username
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64),
     age INTEGER CHECK (age >= 18),      -- Ограничение: 18+
