@@ -57,7 +57,7 @@
 
 ```sql
 CREATE TABLE users (
-    user_id BIGINT PRIMARY KEY,          -- Telegram ID
+    user_id BIGINT PRIMARY KEY,         -- Telegram ID
     username VARCHAR(64),               -- @username
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64),
