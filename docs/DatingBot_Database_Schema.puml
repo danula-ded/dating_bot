@@ -1,0 +1,81 @@
+@startuml DatingBot_Database_Schema_v2
+
+skinparam linetype ortho
+skinparam roundcorner 20
+hide empty members
+skinparam defaultTextAlignment center
+
+entity "users" {
+  * user_id : BIGINT
+  --
+  username : VARCHAR(64)
+  first_name : VARCHAR(64)
+  last_name : VARCHAR(64)
+  age : INTEGER
+  gender : VARCHAR(10)
+  created_at : TIMESTAMP
+}
+
+entity "cities" {
+  * city_id : SERIAL
+  --
+  name : VARCHAR(64)
+}
+
+entity "interests" {
+  * interest_id : SERIAL
+  --
+  name : VARCHAR(64)
+}
+
+entity "profiles" {
+  * profile_id : SERIAL
+  --
+  bio : TEXT
+  photo_url : TEXT
+  preferred_gender : VARCHAR(10)
+  preferred_age_min : INTEGER
+  preferred_age_max : INTEGER
+}
+
+entity "ratings" {
+  * rating_id : SERIAL
+  --
+  profile_score : FLOAT
+  activity_score : FLOAT
+}
+
+entity "user_interests" {
+  * user_id : BIGINT
+  * interest_id : INTEGER
+}
+
+' Связи между таблицами
+users }|--|| cities : "city_id"
+users ||--o{ user_interests : "1:N"
+interests ||--o{ user_interests : "1:N"
+users ||--|| profiles : "1:1"
+users ||--|| ratings : "1:1"
+
+' Примеры данных (необязательно, для наглядности)
+note top of users
+  Пример данных:
+  1001 | ivan_petrov | Иван | Петров | 25 | male
+  1002 | anna_smirnova | Анна | Смирнова | 22 | female
+end note
+
+note right of cities
+  Пример данных:
+  1 | Москва
+  2 | Санкт-Петербург
+  3 | Новосибирск
+end note
+
+note bottom of interests
+  Пример данных:
+  1 | Музыка
+  2 | Спорт
+  3 | Путешествия
+end note
+
+@enduml
