@@ -1,0 +1,15 @@
+#IDE
+.idea
+.vscode
+
+#Secrets
+config/.env
+src/config/.env
+config/.env.db
+
+#Temp
+venv
+.venv
+__pycache__
+.mypy_cache
+.pytest_cache
