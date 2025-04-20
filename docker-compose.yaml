@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -17,7 +17,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
 
   minio:
     image: minio/minio:latest
@@ -99,13 +98,16 @@ services:
       context: .
     command: >
       bash -c "
-      poetry run uvicorn src.app:create_app --factory --host 0.0.0.0 --port 8000 --workers=1 &&
-      PYTHONPATH=. python3 scripts/migrate.py
+      PYTHONPATH=. python3 scripts/migrate.py &&
+      PYTHONPATH=. python3 scripts/load_fixtures.py &&
+      poetry run uvicorn src.app:create_app --factory --host 0.0.0.0 --port 8000 --workers=1
       "
     ports:
       - "8000:8000"
     volumes:
       - ./src:/app
+      - ./scripts:/scripts
+      - ./fixtures:/fixtures
     depends_on:
       postgres:
         condition: service_healthy
