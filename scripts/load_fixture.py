@@ -20,6 +20,7 @@ async def load_fixture(files: list[Path], session: AsyncSession) -> None:
 
 async def main(paths: list[Path]) -> None:
     async with async_session() as session:
+        print(paths)
         await load_fixture(paths, session)
 
 
@@ -27,6 +28,12 @@ if __name__ == '__main__':
     asyncio.run(
         main(
             [
+                Path('fixtures/cities.json'),
+                Path('fixtures/interests.json'),
+                Path('fixtures/users.json'),
+                Path('fixtures/profiles.json'),
+                Path('fixtures/ratings.json'),
+                Path('fixtures/user_interests.json'),
                 Path('fixtures/public.file_records.json'),
             ]
         )

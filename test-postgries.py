@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 async def test_connection() -> None:
     # Create the async engine
-    engine = create_async_engine('postgresql+asyncpg://user:password@localhost/dating_bot', echo=True)
+    engine = create_async_engine('postgresql+asyncpg://appuser:password@localhost/dating_bot', echo=True)
 
     # Connect to the database
     async with engine.connect() as conn:

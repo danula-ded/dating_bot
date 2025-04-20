@@ -1,0 +1,47 @@
+[
+    {
+        "profile_id": 1,
+        "user_id": 1,
+        "bio": "Люблю путешествия и фотографию",
+        "photo_url": "https://example.com/photo1.jpg",
+        "preferred_gender": "male",
+        "preferred_age_min": 25,
+        "preferred_age_max": 35
+    },
+    {
+        "profile_id": 2,
+        "user_id": 2,
+        "bio": "Увлекаюсь спортом и технологиями",
+        "photo_url": "https://example.com/photo2.jpg",
+        "preferred_gender": "female",
+        "preferred_age_min": 23,
+        "preferred_age_max": 30
+    },
+    {
+        "profile_id": 3,
+        "user_id": 3,
+        "bio": "Люблю искусство и чтение",
+        "photo_url": "https://example.com/photo3.jpg",
+        "preferred_gender": "male",
+        "preferred_age_min": 28,
+        "preferred_age_max": 35
+    },
+    {
+        "profile_id": 4,
+        "user_id": 4,
+        "bio": "Увлекаюсь кулинарией и музыкой",
+        "photo_url": "https://example.com/photo4.jpg",
+        "preferred_gender": "female",
+        "preferred_age_min": 25,
+        "preferred_age_max": 32
+    },
+    {
+        "profile_id": 5,
+        "user_id": 5,
+        "bio": "Люблю природу и кино",
+        "photo_url": "https://example.com/photo5.jpg",
+        "preferred_gender": "male",
+        "preferred_age_min": 27,
+        "preferred_age_max": 33
+    }
+] 
