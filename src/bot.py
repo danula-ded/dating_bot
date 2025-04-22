@@ -13,6 +13,8 @@ dp = Dispatcher(storage=RedisStorage(redis=redis_storage))
 default = DefaultBotProperties(parse_mode=ParseMode.HTML)
 bot = Bot(token=settings.BOT_TOKEN, default=default)
 
-dp.include_router(command_router)
-dp.include_router(message_router)
-dp.include_router(callback_router)
+# Регистрируем роутеры в правильном порядке
+# Сначала команды, потом сообщения, потом колбэки
+dp.include_router(command_router)  # Обработка команд (/start, /help и т.д.)
+dp.include_router(message_router)  # Обработка сообщений (регистрация, файлы и т.д.)
+dp.include_router(callback_router)  # Обработка колбэков (кнопки и т.д.)

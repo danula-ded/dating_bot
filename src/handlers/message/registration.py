@@ -21,76 +21,58 @@ router = Router()
 
 
 @router.message(AuthGroup.registration_name)
-async def handle_registration_start(message: types.Message, state: FSMContext) -> None:
-    """Handle the start of registration process"""
-    logger.info('Handling registration start for user %s', message.from_user.id)
-    current_state = await state.get_state()
-    logger.info('Current state in registration handler: %s', current_state)
-
-    if not message.text or not message.text.strip():
-        await message.reply('Пожалуйста, введите ваше имя текстом.')
-        return
-
-    await state.update_data(first_name=message.text.strip())
-    await state.set_state(AuthGroup.registration_age)
-    current_state = await state.get_state()
-    logger.info('State after setting registration_age: %s', current_state)
-    await message.reply('Отлично! Теперь введите ваш возраст (только число):')
-
-
 @router.message(AuthGroup.registration_age)
-async def handle_age(message: Message, state: FSMContext) -> None:
-    """Handle age input"""
-    if not message.text or not message.text.isdigit():
-        await message.reply('Пожалуйста, введите возраст числом.')
-        return
-
-    age = int(message.text)
-    if age < 18:
-        await message.reply('Извините, но вы должны быть старше 18 лет.')
-        return
-
-    await state.update_data(age=age)
-    await state.set_state(AuthGroup.registration_gender)
-    await message.reply('Выберите ваш пол:\n' '1. Мужской\n' '2. Женский\n' '3. Другой\n' 'Введите номер варианта:')
-
-
 @router.message(AuthGroup.registration_gender)
-async def handle_gender(message: types.Message, state: FSMContext) -> None:
-    """Handle gender selection"""
-    gender_map = {'1': 'male', '2': 'female', '3': 'other'}
-
-    if not message.text or message.text not in gender_map:
-        await message.reply('Пожалуйста, выберите вариант 1, 2 или 3.')
-        return
-
-    await state.update_data(gender=gender_map[message.text])
-    await state.set_state(AuthGroup.registration_city)
-    await message.reply('Введите название вашего города:')
-
-
 @router.message(AuthGroup.registration_city)
-async def handle_city(message: types.Message, state: FSMContext) -> None:
-    """Handle city input"""
-    if not message.text:
-        await message.reply('Пожалуйста, введите название города.')
-        return
-
-    await state.update_data(city=message.text)
-    await state.set_state(AuthGroup.registration_bio)
-    await message.reply('Расскажите немного о себе (краткое описание):')
-
-
 @router.message(AuthGroup.registration_bio)
-async def handle_bio(message: types.Message, state: FSMContext) -> None:
-    """Handle bio input"""
+async def handle_registration(message: types.Message, state: FSMContext) -> None:
+    """Unified handler for registration states"""
+    current_state = await state.get_state()
+    logger.info('Handling registration state %s for user %s', current_state, message.from_user.id)
+
     if not message.text:
-        await message.reply('Пожалуйста, напишите что-нибудь о себе.')
+        await message.reply('Пожалуйста, введите текст.')
         return
 
-    await state.update_data(bio=message.text)
-    await state.set_state(AuthGroup.registration_photo)
-    await message.reply('Отправьте свою фотографию для профиля:')
+    if current_state == AuthGroup.registration_name.state:
+        name = message.text.strip()
+        if not name:
+            await message.reply('Пожалуйста, введите ваше имя текстом.')
+            return
+        await state.update_data(first_name=name)
+        await state.set_state(AuthGroup.registration_age)
+        await message.reply('Отлично! Теперь введите ваш возраст (только число):')
+
+    elif current_state == AuthGroup.registration_age.state:
+        if not message.text.isdigit():
+            await message.reply('Пожалуйста, введите возраст числом.')
+            return
+        age = int(message.text)
+        if age < 18:
+            await message.reply('Извините, но вы должны быть старше 18 лет.')
+            return
+        await state.update_data(age=age)
+        await state.set_state(AuthGroup.registration_gender)
+        await message.reply('Выберите ваш пол:\n1. Мужской\n2. Женский\n3. Другой\nВведите номер варианта:')
+
+    elif current_state == AuthGroup.registration_gender.state:
+        gender_map = {'1': 'male', '2': 'female', '3': 'other'}
+        if message.text not in gender_map:
+            await message.reply('Пожалуйста, выберите вариант 1, 2 или 3.')
+            return
+        await state.update_data(gender=gender_map[message.text])
+        await state.set_state(AuthGroup.registration_city)
+        await message.reply('Введите название вашего города:')
+
+    elif current_state == AuthGroup.registration_city.state:
+        await state.update_data(city=message.text)
+        await state.set_state(AuthGroup.registration_bio)
+        await message.reply('Расскажите немного о себе (краткое описание):')
+
+    elif current_state == AuthGroup.registration_bio.state:
+        await state.update_data(bio=message.text)
+        await state.set_state(AuthGroup.registration_photo)
+        await message.reply('Отправьте свою фотографию для профиля:')
 
 
 @router.message(AuthGroup.registration_photo, F.content_type == ContentType.PHOTO)

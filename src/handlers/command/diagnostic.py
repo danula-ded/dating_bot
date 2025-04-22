@@ -33,6 +33,7 @@ async def check_state(message: types.Message, state: FSMContext) -> None:
     else:
         state_info.append('- Данные отсутствуют')
 
+    logger.info('State check for user %s: %s', message.from_user.id, state_info)
     await message.reply('\n'.join(state_info))
 
 
