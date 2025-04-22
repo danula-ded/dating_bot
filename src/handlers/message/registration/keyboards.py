@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 
 def get_registration_keyboard() -> ReplyKeyboardMarkup:
@@ -8,6 +8,6 @@ def get_registration_keyboard() -> ReplyKeyboardMarkup:
             [KeyboardButton(text='Начать регистрацию')],
         ],
         resize_keyboard=True,
-        one_time_keyboard=True
+        one_time_keyboard=True,
     )
-    return keyboard 
+    return keyboard

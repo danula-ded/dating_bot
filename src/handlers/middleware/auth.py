@@ -16,7 +16,20 @@ class AuthMiddleware(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         current_state = await data['state'].get_state()
-        if not current_state or current_state == AuthGroup.no_authorized:
+
+        # Разрешаем все сообщения в процессе регистрации
+        if current_state and (
+            current_state == AuthGroup.registration_name.state
+            or current_state == AuthGroup.registration_age.state
+            or current_state == AuthGroup.registration_gender.state
+            or current_state == AuthGroup.registration_city.state
+            or current_state == AuthGroup.registration_bio.state
+            or current_state == AuthGroup.registration_photo.state
+        ):
+            return await handler(event, data)
+
+        # Пропускаем только если состояние не установлено или равно no_authorized
+        if not current_state or current_state == AuthGroup.no_authorized.state:
             raise SkipHandler('Unauthorized')
 
         return await handler(event, data)

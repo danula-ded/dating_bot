@@ -2,6 +2,7 @@ import socket
 import subprocess
 from typing import List
 
+
 def get_used_ports() -> List[int]:
     """Получить список используемых портов в системе"""
     used_ports = []
@@ -14,6 +15,7 @@ def get_used_ports() -> List[int]:
             except OSError:
                 used_ports.append(port)
     return used_ports
+
 
 def find_process_using_port(port: int) -> str:
     """Найти процесс, использующий указанный порт"""
@@ -36,6 +38,7 @@ def find_process_using_port(port: int) -> str:
         print(f"Ошибка при поиске процесса: {e}")
     return ""
 
+
 def kill_process(pid: str) -> bool:
     """Убить процесс по PID"""
     try:
@@ -47,6 +50,7 @@ def kill_process(pid: str) -> bool:
     except Exception as e:
         print(f"Не удалось убить процесс {pid}: {e}")
         return False
+
 
 def clear_ports(ports_to_clear: List[int]) -> None:
     """Очистить указанные порты"""
@@ -62,9 +66,10 @@ def clear_ports(ports_to_clear: List[int]) -> None:
         else:
             print(f"Порт {port} не используется или не удалось определить процесс.")
 
+
 if __name__ == "__main__":
     import os
-    
+
     # Порты из вашего docker-compose.yml
     ports_from_compose = [
         5432,  # postgres
@@ -72,24 +77,24 @@ if __name__ == "__main__":
         9001,  # minio
         6379,  # redis
         5672,  # rabbitmq
-        15672, # rabbitmq management
+        15672,  # rabbitmq management
         9090,  # prometheus
         8010,  # consumer
-        8000   # bot
+        8000,  # bot
     ]
-    
+
     print("Скрипт очистки портов из docker-compose.yml")
     print("=" * 50)
-    
+
     used_ports = get_used_ports()
     ports_to_clear = [port for port in ports_from_compose if port in used_ports]
-    
+
     if not ports_to_clear:
         print("Все порты свободны. Ничего очищать не нужно.")
     else:
         print(f"Найдены занятые порты: {ports_to_clear}")
         clear_ports(ports_to_clear)
-    
+
     print("\nДля полной очистки также выполните:")
     print("1. docker-compose down")
     print("2. docker system prune -f")

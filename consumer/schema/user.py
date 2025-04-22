@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
 from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class UserBase(BaseModel):
@@ -24,4 +25,4 @@ class UserInDB(UserBase):
     city_id: Optional[int] = None
 
     class Config:
-        from_attributes = True 
+        from_attributes = True

@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, Field
+
 
 class UserBase(BaseModel):
     username: Optional[str] = Field(None, max_length=64)
@@ -10,15 +12,18 @@ class UserBase(BaseModel):
     gender: Optional[str] = Field(None, pattern="^(male|female|other)$")
     city_id: Optional[int] = None
 
+
 class UserCreate(UserBase):
     user_id: int
 
+
 class UserUpdate(UserBase):
     pass
+
 
 class UserInDB(UserBase):
     user_id: int
     created_at: datetime
 
     class Config:
-        from_attributes = True 
+        from_attributes = True

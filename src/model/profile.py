@@ -1,5 +1,7 @@
-from sqlalchemy import String, Integer, Column, ForeignKey, Text, Float, BigInteger
+from sqlalchemy import BigInteger, Column, Float, ForeignKey, Integer, String, Text
+
 from .meta import Base
+
 
 class Profile(Base):
     __tablename__ = "profiles"
@@ -10,4 +12,4 @@ class Profile(Base):
     photo_url = Column(Text)
     preferred_gender = Column(String(10))
     preferred_age_min = Column(Integer)
-    preferred_age_max = Column(Integer) 
+    preferred_age_max = Column(Integer)

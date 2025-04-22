@@ -22,7 +22,8 @@ async def get_file(
         StreamingResponse: Файл в виде потока байтов.
     """
 
-    minio_path = f'{user_id}_{file_name}'
+    # Используем file_name как есть, так как он уже содержит user_id
+    minio_path = file_name
 
     # Скачиваем файл из MinIO
     try:

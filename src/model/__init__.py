@@ -1,14 +1,14 @@
 from sqlalchemy.orm import configure_mappers
 
 from . import file
-from .meta import Base, metadata
-from .user import User
 from .city import City
+from .file import FileRecord
 from .interest import Interest
-from .user_interest import UserInterest
+from .meta import Base, metadata
 from .profile import Profile
 from .rating import Rating
-from .file import FileRecord
+from .user import User
+from .user_interest import UserInterest
 
 configure_mappers()
 

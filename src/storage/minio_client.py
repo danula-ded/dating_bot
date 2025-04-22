@@ -85,3 +85,14 @@ async def download_file(minio_path: str) -> io.BytesIO:
     except Exception as e:
         logger.error('Ошибка при загрузке файла {minio_path} из MinIO: %s', e)
         raise
+
+
+def check_minio_connection() -> bool:
+    """Проверяет соединение с MinIO"""
+    try:
+        # Пробуем получить список бакетов
+        minio_client.list_buckets()
+        return True
+    except Exception as e:
+        logger.error('Ошибка подключения к MinIO: %s', e)
+        return False

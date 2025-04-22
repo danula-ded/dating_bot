@@ -1,1 +1,1 @@
-"""Registration handlers package.""" 
+"""Registration handlers package."""
