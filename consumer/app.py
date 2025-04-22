@@ -2,11 +2,10 @@ import logging.config
 
 import msgpack
 
-from consumer.handlers.show_file import show_files
-from consumer.handlers.upload_file import upload_file_handler
+from consumer.handlers.registration import handle_registration
 from consumer.logger import LOGGING_CONFIG, correlation_id_ctx, logger
 from consumer.metrics import TOTAL_RECEIVED_MESSAGES
-from consumer.schema.file import FileMessage
+from consumer.schema.registration import RegistrationMessage
 from consumer.storage import rabbit
 
 
@@ -14,11 +13,11 @@ async def start_consumer() -> None:
     logging.config.dictConfig(LOGGING_CONFIG)
     logger.info('Starting consumer...')
 
-    queue_name = 'user_messages'
+    queue_name = 'user_registration_queue'
     async with rabbit.channel_pool.acquire() as channel:  # aio_pika.Channel
 
         # Will take no more than 10 messages in advance
-        await channel.set_qos(prefetch_count=10)  # TODO почитать
+        await channel.set_qos(prefetch_count=10)
 
         # Declaring queue
         queue = await channel.declare_queue(queue_name, durable=True)
@@ -30,15 +29,17 @@ async def start_consumer() -> None:
                 async with message.process():
                     if message.correlation_id is None:
                         logger.error('Message has no correlation_id')
-                        return  # после выхода из with будет ack (есть еще no_ack)
+                        return
                     correlation_id_ctx.set(message.correlation_id)
 
-                    body: FileMessage = FileMessage.model_validate(msgpack.unpackb(message.body))
+                    try:
+                        body: RegistrationMessage = RegistrationMessage.model_validate(msgpack.unpackb(message.body))
                     logger.info('Message: %s', body)
 
-                    if body.action == 'show_files_user':
-                        await show_files(body)
-                    elif body.action == 'upload_file':
-                        await upload_file_handler(body)
+                        if body.action == 'user_registration':
+                            await handle_registration(body)
                     else:
                         logger.warning('Unknown action: %s', body.action)
+                    except Exception as e:
+                        logger.error('Error processing message: %s', e)
+                        raise

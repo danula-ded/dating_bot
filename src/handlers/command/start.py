@@ -11,10 +11,16 @@ logger = logging.getLogger(__name__)
 # Функция обработки команды /start
 async def start(message: types.Message, state: FSMContext) -> None:
     await state.set_data({})
-    await state.get_data()
-    await state.set_state(AuthGroup.authorized)
-    await state.get_state()
-    await message.reply('добро пожаловать в документ-бот, возможные команды можно посмотреть по команде /help')
+    current_state = await state.get_state()
+
+    if current_state == AuthGroup.authorized.state:
+        await message.reply('Вы уже зарегистрированы! Используйте /help для просмотра доступных команд.')
+        return
+
+    await state.set_state(AuthGroup.registration)
+    await message.reply(
+        'Добро пожаловать в бот знакомств! Давайте начнем регистрацию.\n' 'Пожалуйста, введите ваше имя:'
+    )
 
 
 # функция обработки команды /help
