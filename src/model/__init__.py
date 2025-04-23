@@ -2,8 +2,10 @@ from sqlalchemy.orm import configure_mappers
 
 from . import file
 from .city import City
+from .dislike import Dislike
 from .file import FileRecord
 from .interest import Interest
+from .like import Like
 from .meta import Base, metadata
 from .profile import Profile
 from .rating import Rating
@@ -22,4 +24,6 @@ __all__ = [
     'Profile',
     'Rating',
     'FileRecord',
+    'Like',
+    'Dislike',
 ]

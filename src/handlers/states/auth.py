@@ -9,5 +9,8 @@ class AuthGroup(StatesGroup):
     registration_gender = State()
     registration_city = State()
     registration_bio = State()
+    registration_preferred_gender = State()
+    registration_preferred_age_min = State()
+    registration_preferred_age_max = State()
     registration_photo = State()
     authorized = State()
