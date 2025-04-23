@@ -10,7 +10,6 @@ entity "users" {
   --
   username : VARCHAR(64)
   first_name : VARCHAR(64)
-  last_name : VARCHAR(64)
   age : INTEGER
   gender : VARCHAR(10)
   created_at : TIMESTAMP

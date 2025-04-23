@@ -10,7 +10,6 @@ class User(Base):
     user_id = Column(BigInteger, primary_key=True)
     username = Column(String(64), unique=True)
     first_name = Column(String(64), nullable=False)
-    last_name = Column(String(64))
     age = Column(Integer)
     gender = Column(String(10))
     city_id = Column(Integer, ForeignKey("cities.city_id"))

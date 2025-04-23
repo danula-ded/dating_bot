@@ -16,7 +16,6 @@ class RegistrationHandler:
                     - user_id: int
                     - username: str
                     - first_name: str
-                    - last_name: str
                     - phone: str
         """
         try:
@@ -24,7 +23,6 @@ class RegistrationHandler:
                 user_id=message['user_id'],
                 username=message['username'],
                 first_name=message['first_name'],
-                last_name=message['last_name'],
                 phone=message['phone']
             )
             

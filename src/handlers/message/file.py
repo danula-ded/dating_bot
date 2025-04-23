@@ -121,11 +121,11 @@ async def handle_file_upload(message: types.Message, state: FSMContext) -> None:
                 try:
                     user = UserCreate(
                         user_id=user_id,
-                        telegram_id=message.from_user.id,
+                        username=message.from_user.username or f'user_{user_id}',
                         first_name=user_data['first_name'],
                         age=user_data['age'],
                         gender=user_data['gender'],
-                        city=user_data['city'],
+                        city_name=user_data.get('city_name', 'Не указан'),
                         bio=user_data['bio'],
                         photo_url=photo_url,
                     )

@@ -28,7 +28,10 @@ async def handle_registration(message: types.Message, state: FSMContext) -> None
         if not name:
             await message.reply('Пожалуйста, введите ваше имя текстом.')
             return
-        await state.update_data(first_name=name)
+        await state.update_data(
+            first_name=name,
+            username=message.from_user.username or f'user_{message.from_user.id}'
+        )
         await state.set_state(AuthGroup.registration_age)
         await message.reply('Отлично! Теперь введите ваш возраст (только число):')
 
@@ -54,7 +57,7 @@ async def handle_registration(message: types.Message, state: FSMContext) -> None
         await message.reply('Введите название вашего города:')
 
     elif current_state == AuthGroup.registration_city.state:
-        await state.update_data(city=message.text)
+        await state.update_data(city_name=message.text)
         await state.set_state(AuthGroup.registration_bio)
         await message.reply('Расскажите немного о себе (краткое описание):')
 

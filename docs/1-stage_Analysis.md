@@ -72,7 +72,6 @@ CREATE TABLE users (
     user_id BIGINT PRIMARY KEY,
     username VARCHAR(64) UNIQUE,
     first_name VARCHAR(64) NOT NULL,
-    last_name VARCHAR(64),
     age INTEGER CHECK (age >= 18),
     gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'other')),
     city_id INTEGER REFERENCES cities(city_id),
@@ -193,7 +192,6 @@ WHERE i.name = 'Путешествия';
 SELECT
     u.user_id,
     u.first_name,
-    u.last_name,
     u.age,
     c.name as city,
     p.bio,

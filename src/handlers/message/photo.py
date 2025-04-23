@@ -64,11 +64,11 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
         # Create user and profile
         user = UserCreate(
             user_id=message.from_user.id,
-            telegram_id=message.from_user.id,
+            username=message.from_user.username or f'user_{message.from_user.id}',
             first_name=user_data['first_name'],
             age=user_data['age'],
             gender=user_data['gender'],
-            city=user_data['city'],
+            city_name=user_data['city_name'],
             bio=user_data['bio'],
             photo_url=photo_url,
         )

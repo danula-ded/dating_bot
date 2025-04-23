@@ -3,8 +3,7 @@
         "user_id": 1,
         "username": "user1",
         "first_name": "Анна",
-        "last_name": "Иванова",
-        "age": 25,
+        "age": 30,
         "gender": "female",
         "city_id": 1
     },
@@ -12,7 +11,6 @@
         "user_id": 2,
         "username": "user2",
         "first_name": "Иван",
-        "last_name": "Петров",
         "age": 30,
         "gender": "male",
         "city_id": 2
@@ -21,7 +19,6 @@
         "user_id": 3,
         "username": "user3",
         "first_name": "Мария",
-        "last_name": "Сидорова",
         "age": 28,
         "gender": "female",
         "city_id": 3
@@ -30,7 +27,6 @@
         "user_id": 4,
         "username": "user4",
         "first_name": "Алексей",
-        "last_name": "Смирнов",
         "age": 32,
         "gender": "male",
         "city_id": 4
@@ -39,7 +35,6 @@
         "user_id": 5,
         "username": "user5",
         "first_name": "Елена",
-        "last_name": "Козлова",
         "age": 27,
         "gender": "female",
         "city_id": 5
