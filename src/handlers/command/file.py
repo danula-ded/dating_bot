@@ -20,7 +20,7 @@ async def initiate_upload(message: types.Message, state: FSMContext) -> None:
 
     # Устанавливаем состояние через FSMContext
     await state.set_state(FileStates.waiting_for_file)
-    await message.reply('Отправьте файл, который хотите загрузить.')
+    await message.reply('Отправьте файл или фотографию, которые хотите загрузить.')
 
 
 async def check_state(message: types.Message, state: FSMContext) -> None:

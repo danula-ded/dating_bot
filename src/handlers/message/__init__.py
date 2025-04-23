@@ -1,1 +1,1 @@
-from . import file, registration
+from . import file, registration, photo
