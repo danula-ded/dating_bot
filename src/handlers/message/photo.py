@@ -83,7 +83,7 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
         async with channel_pool.acquire() as channel:
             exchange = await channel.declare_exchange('user_files', ExchangeType.TOPIC, durable=True)
 
-            message = RegistrationMessage(
+            registration_message = RegistrationMessage(
                 user=user,
                 profile=profile,
                 correlation_id=context.get(HeaderKeys.correlation_id)
@@ -91,7 +91,7 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
 
             await exchange.publish(
                 aio_pika.Message(
-                    body=msgpack.packb(message.model_dump()),
+                    body=msgpack.packb(registration_message.model_dump()),
                     content_type='application/x-msgpack',
                     headers={'correlation_id': context.get(HeaderKeys.correlation_id)},
                 ),
