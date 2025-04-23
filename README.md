@@ -1,5 +1,32 @@
 # This is dating_bot
 
+## Run
+
+### Clear ports
+
+```bash
+scripts/cleanup_ports.sh
+```
+
+можно запустить через polling и через webhook, но на polling не будет работать работать отправка файлов через ручку /get-file
+
+### Up docker compose
+
+```bash
+docker compose up --build
+```
+
+возможно бот упадет при запуске, но если его перезагрузить (только бота), то он будет работать
+под ботом понимается продюсер в папке src/app.py
+
+### Migrate
+
+```bash
+PYTHONPATH=. python3 scripts/migrate.py
+```
+
+# Tasks
+
 **Практика: написание Dating приложения**
 
 **Варианты алгоритмов рейтинга:**
