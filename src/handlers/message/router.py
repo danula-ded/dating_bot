@@ -51,7 +51,7 @@ async def handle_text_message(message: types.Message, state: FSMContext) -> None
         await message.reply('Введите название вашего города:')
 
     elif current_state == AuthGroup.registration_city.state:
-        await state.update_data(city=message.text)
+        await state.update_data(city_name=message.text)
         await state.set_state(AuthGroup.registration_bio)
         await message.reply('Расскажите немного о себе (краткое описание):')
 

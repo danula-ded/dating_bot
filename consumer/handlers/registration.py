@@ -11,9 +11,9 @@ from src.model.user import User
 
 async def get_or_create_city(db: AsyncSession, city_name: str | None) -> City:
     """Получает существующий город или создает новый."""
-    # Если city_name не указан, используем "Не указан" как значение по умолчанию
+    # Если city_name не указан, используем 'Не указан' как значение по умолчанию
     if not city_name:
-        city_name = "Сочи"
+        city_name = 'Сочи'
     
     # Ищем город по имени
     result = await db.execute(select(City).where(City.name == city_name))
@@ -35,6 +35,11 @@ async def handle_registration(message: RegistrationMessage) -> None:
             # Получаем или создаем город
             city = await get_or_create_city(db, message.user.city_name)
 
+            # Проверяем и форматируем username
+            username = message.user.username
+            if username and not username.startswith('@'):
+                username = f'@{username}'
+
             # Проверяем существование пользователя
             result = await db.execute(select(User).where(User.user_id == message.user.user_id))
             existing_user = result.scalar_one_or_none()
@@ -45,11 +50,12 @@ async def handle_registration(message: RegistrationMessage) -> None:
                 existing_user.age = message.user.age
                 existing_user.gender = message.user.gender
                 existing_user.city_id = city.city_id
+                existing_user.username = username
             else:
                 # Создаем нового пользователя
                 user = User(
                     user_id=message.user.user_id,
-                    username=message.user.username,
+                    username=username,
                     first_name=message.user.first_name,
                     age=message.user.age,
                     gender=message.user.gender,

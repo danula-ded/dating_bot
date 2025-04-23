@@ -117,6 +117,7 @@ async def handle_file_upload(message: types.Message, state: FSMContext) -> None:
                 # Обработка фото для регистрации
                 photo_url = get_file_path(unique_name)
                 user_data = await state.get_data()
+                logger.info('Creating user with data: %s', user_data)
 
                 try:
                     user = UserCreate(
@@ -134,6 +135,14 @@ async def handle_file_upload(message: types.Message, state: FSMContext) -> None:
                         user_id=user_id,
                         bio=user_data['bio'],
                         photo_url=photo_url,
+                    )
+
+                    logger.info(
+                        '[%s] Registration message received: user=%s profile=%s action=%s',
+                        context.get(HeaderKeys.correlation_id),
+                        user,
+                        profile,
+                        'user_registration'
                     )
 
                     await exchange.publish(

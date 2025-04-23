@@ -60,6 +60,7 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
     if current_state == AuthGroup.registration_photo.state:
         # Get all collected data
         user_data = await state.get_data()
+        logger.info('Creating user with data: %s', user_data)
 
         # Create user and profile
         user = UserCreate(
@@ -87,6 +88,14 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
                 user=user,
                 profile=profile,
                 correlation_id=context.get(HeaderKeys.correlation_id)
+            )
+
+            logger.info(
+                '[%s] Registration message received: user=%s profile=%s action=%s',
+                context.get(HeaderKeys.correlation_id),
+                user,
+                profile,
+                'user_registration'
             )
 
             await exchange.publish(

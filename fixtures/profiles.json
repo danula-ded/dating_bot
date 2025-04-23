@@ -43,5 +43,230 @@
         "preferred_gender": "male",
         "preferred_age_min": 27,
         "preferred_age_max": 33
+    },
+    {
+        "profile_id": 1005,
+        "user_id": 6,
+        "bio": "Увлекаюсь программированием и наукой",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 25,
+        "preferred_age_max": 32
+    },
+    {
+        "profile_id": 1006,
+        "user_id": 7,
+        "bio": "Люблю театр и живопись",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 28,
+        "preferred_age_max": 35
+    },
+    {
+        "profile_id": 1007,
+        "user_id": 8,
+        "bio": "Увлекаюсь историей и философией",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 26,
+        "preferred_age_max": 33
+    },
+    {
+        "profile_id": 1008,
+        "user_id": 9,
+        "bio": "Люблю спорт и активный отдых",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 24,
+        "preferred_age_max": 30
+    },
+    {
+        "profile_id": 1009,
+        "user_id": 10,
+        "bio": "Увлекаюсь психологией и саморазвитием",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 27,
+        "preferred_age_max": 34
+    },
+    {
+        "profile_id": 1010,
+        "user_id": 11,
+        "bio": "Люблю музыку и танцы",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 26,
+        "preferred_age_max": 32
+    },
+    {
+        "profile_id": 1011,
+        "user_id": 12,
+        "bio": "Увлекаюсь фотографией и дизайном",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 25,
+        "preferred_age_max": 31
+    },
+    {
+        "profile_id": 1012,
+        "user_id": 13,
+        "bio": "Люблю литературу и поэзию",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 24,
+        "preferred_age_max": 30
+    },
+    {
+        "profile_id": 1013,
+        "user_id": 14,
+        "bio": "Увлекаюсь наукой и технологиями",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 26,
+        "preferred_age_max": 33
+    },
+    {
+        "profile_id": 1014,
+        "user_id": 15,
+        "bio": "Люблю спорт и здоровый образ жизни",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 25,
+        "preferred_age_max": 31
+    },
+    {
+        "profile_id": 1015,
+        "user_id": 16,
+        "bio": "Увлекаюсь искусством и культурой",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 27,
+        "preferred_age_max": 34
+    },
+    {
+        "profile_id": 1016,
+        "user_id": 17,
+        "bio": "Люблю путешествия и приключения",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 28,
+        "preferred_age_max": 35
+    },
+    {
+        "profile_id": 1017,
+        "user_id": 18,
+        "bio": "Увлекаюсь кулинарией и виноделием",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 25,
+        "preferred_age_max": 32
+    },
+    {
+        "profile_id": 1018,
+        "user_id": 19,
+        "bio": "Люблю музыку и театр",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 26,
+        "preferred_age_max": 33
+    },
+    {
+        "profile_id": 1019,
+        "user_id": 20,
+        "bio": "Увлекаюсь спортом и фитнесом",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 24,
+        "preferred_age_max": 30
+    },
+    {
+        "profile_id": 1020,
+        "user_id": 21,
+        "bio": "Люблю литературу и кино",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 25,
+        "preferred_age_max": 31
+    },
+    {
+        "profile_id": 1021,
+        "user_id": 22,
+        "bio": "Увлекаюсь фотографией и дизайном",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 27,
+        "preferred_age_max": 34
+    },
+    {
+        "profile_id": 1022,
+        "user_id": 23,
+        "bio": "Люблю науку и технологии",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 26,
+        "preferred_age_max": 32
+    },
+    {
+        "profile_id": 1023,
+        "user_id": 24,
+        "bio": "Увлекаюсь искусством и культурой",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 25,
+        "preferred_age_max": 31
+    },
+    {
+        "profile_id": 1024,
+        "user_id": 25,
+        "bio": "Люблю спорт и активный отдых",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 24,
+        "preferred_age_max": 30
+    },
+    {
+        "profile_id": 1025,
+        "user_id": 26,
+        "bio": "Увлекаюсь психологией и саморазвитием",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 26,
+        "preferred_age_max": 33
+    },
+    {
+        "profile_id": 1026,
+        "user_id": 27,
+        "bio": "Люблю музыку и танцы",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 25,
+        "preferred_age_max": 31
+    },
+    {
+        "profile_id": 1027,
+        "user_id": 28,
+        "bio": "Увлекаюсь фотографией и дизайном",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 27,
+        "preferred_age_max": 34
+    },
+    {
+        "profile_id": 1028,
+        "user_id": 29,
+        "bio": "Люблю литературу и поэзию",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "male",
+        "preferred_age_min": 26,
+        "preferred_age_max": 32
+    },
+    {
+        "profile_id": 1029,
+        "user_id": 30,
+        "bio": "Увлекаюсь наукой и технологиями",
+        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
+        "preferred_gender": "female",
+        "preferred_age_min": 25,
+        "preferred_age_max": 31
     }
 ] 

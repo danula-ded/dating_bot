@@ -32,6 +32,7 @@ async def handle_registration(message: types.Message, state: FSMContext) -> None
             first_name=name,
             username=message.from_user.username or f'user_{message.from_user.id}'
         )
+        logger.info('Updated registration data for user %s: %s', message.from_user.id, await state.get_data())
         await state.set_state(AuthGroup.registration_age)
         await message.reply('Отлично! Теперь введите ваш возраст (только число):')
 
@@ -44,6 +45,7 @@ async def handle_registration(message: types.Message, state: FSMContext) -> None
             await message.reply('Извините, но вы должны быть старше 18 лет.')
             return
         await state.update_data(age=age)
+        logger.info('Updated registration data for user %s: %s', message.from_user.id, await state.get_data())
         await state.set_state(AuthGroup.registration_gender)
         await message.reply('Выберите ваш пол:\n1. Мужской\n2. Женский\n3. Другой\nВведите номер варианта:')
 
@@ -53,15 +55,22 @@ async def handle_registration(message: types.Message, state: FSMContext) -> None
             await message.reply('Пожалуйста, выберите вариант 1, 2 или 3.')
             return
         await state.update_data(gender=gender_map[message.text])
+        logger.info('Updated registration data for user %s: %s', message.from_user.id, await state.get_data())
         await state.set_state(AuthGroup.registration_city)
         await message.reply('Введите название вашего города:')
 
     elif current_state == AuthGroup.registration_city.state:
-        await state.update_data(city_name=message.text)
+        city_name = message.text.strip()
+        if not city_name:
+            await message.reply('Пожалуйста, введите название города.')
+            return
+        await state.update_data(city_name=city_name)
+        logger.info('Updated registration data for user %s: %s', message.from_user.id, await state.get_data())
         await state.set_state(AuthGroup.registration_bio)
         await message.reply('Расскажите немного о себе (краткое описание):')
 
     elif current_state == AuthGroup.registration_bio.state:
         await state.update_data(bio=message.text)
+        logger.info('Updated registration data for user %s: %s', message.from_user.id, await state.get_data())
         await state.set_state(AuthGroup.registration_photo)
         await message.reply('Отправьте свою фотографию для профиля:')
