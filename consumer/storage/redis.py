@@ -1,5 +1,5 @@
 import json
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from redis import asyncio as aioredis
 from consumer.logger import logger
@@ -57,4 +57,45 @@ async def get_user_profiles(user_id: int) -> Optional[List[dict]]:
         return None
     except Exception as e:
         logger.error('Error retrieving profiles from Redis for user %s: %s', user_id, e)
+        raise
+
+async def store_like(user_id: int, target_user_id: int) -> None:
+    """
+    Store a like in Redis.
+    
+    Args:
+        user_id: The ID of the user who gave the like
+        target_user_id: The ID of the user who received the like
+    """
+    redis = await get_redis()
+    key = f"user:{user_id}:likes"
+    
+    try:
+        # Add target_user_id to the set of users liked by user_id
+        await redis.sadd(key, target_user_id)
+        logger.info('Stored like from user %s to user %s in Redis', user_id, target_user_id)
+    except Exception as e:
+        logger.error('Error storing like in Redis: %s', e)
+        raise
+
+async def get_likes(user_id: int) -> Set[str]:
+    """
+    Get all users that a user has liked from Redis.
+    
+    Args:
+        user_id: The ID of the user
+        
+    Returns:
+        Set of user IDs that the user has liked
+    """
+    redis = await get_redis()
+    key = f"user:{user_id}:likes"
+    
+    try:
+        # Get all members of the set
+        likes = await redis.smembers(key)
+        logger.info('Retrieved %d likes for user %s from Redis', len(likes), user_id)
+        return likes
+    except Exception as e:
+        logger.error('Error retrieving likes from Redis for user %s: %s', user_id, e)
         raise 

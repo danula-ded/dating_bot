@@ -4,6 +4,7 @@ from aiogram.filters import Command
 from .diagnostic import check_services, debug_info
 from .file import check_state, initiate_upload, show_files
 from .start import help_command, start
+from .search import router as search_router
 
 router = Router()
 
@@ -15,3 +16,6 @@ router.message.register(check_state, Command('check_state'))
 router.message.register(check_services, Command('check_services'))
 router.message.register(debug_info, Command('debug'))
 router.message.register(help_command, Command('help'))
+
+# Include search router
+router.include_router(search_router)

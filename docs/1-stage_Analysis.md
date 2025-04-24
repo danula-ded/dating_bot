@@ -225,3 +225,9 @@ WHERE
     AND u.user_id != 1001
 ORDER BY total_score DESC;
 ```
+
+### Немного про архитектуру 
+
+- Models (src/model/) - Define the database structure and relationships. These are your SQLAlchemy models that represent database tables.
+- Schemas (src/schema/) - Define the data structures for API requests/responses and data validation. These are Pydantic models used for serialization/deserialization.
+- Services (src/services/) - Contain business logic and database operations. They act as an abstraction layer between your handlers/controllers and the database.

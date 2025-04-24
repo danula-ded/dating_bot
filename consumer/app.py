@@ -7,6 +7,8 @@ from consumer.handlers.registration import handle_registration
 from consumer.handlers.upload_file import upload_file_handler
 from consumer.handlers.show_file import show_files
 from consumer.handlers.profile_update import handle_profile_update
+from consumer.handlers.profile import handle_profile_redis_update
+from consumer.handlers.interaction import handle_like, handle_dislike
 from consumer.logger import LOGGING_CONFIG, correlation_id_ctx, logger
 from consumer.metrics import TOTAL_RECEIVED_MESSAGES
 from consumer.schema.registration import RegistrationMessage
@@ -60,13 +62,22 @@ async def start_consumer() -> None:
                                     logger.warning('Unknown registration action: %s', body.action)
 
                             except Exception:
-                                # If not RegistrationMessage, try as profile update
+                                # If not RegistrationMessage, try as profile update or Redis update
                                 try:
                                     body = msgpack.unpackb(message.body)
-                                    if isinstance(body, dict) and 'action' in body and body['action'] == 'profile_update':
-                                        await handle_profile_update(body)
+                                    if isinstance(body, dict) and 'action' in body:
+                                        if body['action'] == 'profile_update':
+                                            await handle_profile_update(body)
+                                        elif body['action'] == 'update_profile_redis':
+                                            await handle_profile_redis_update(body)
+                                        elif body['action'] == 'like':
+                                            await handle_like(body)
+                                        elif body['action'] == 'dislike':
+                                            await handle_dislike(body)
+                                        else:
+                                            logger.warning('Unknown message type: %s', body)
                                     else:
-                                        logger.warning('Unknown message type: %s', body)
+                                        logger.warning('Invalid message format: %s', body)
                                 except Exception as e:
                                     logger.error('Failed to parse message: %s', e)
                                     continue

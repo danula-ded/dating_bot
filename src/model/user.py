@@ -15,11 +15,26 @@ class User(Base):
     gender = Column(String(10))
     city_id = Column(Integer, ForeignKey("cities.city_id"))
     created_at = Column(TIMESTAMP, server_default=func.now())
+    active_score = Column(Integer, default=0)
 
-    # Отношения для лайков
-    likes_given = relationship('Like', foreign_keys='Like.user_id', back_populates='from_user')
-    likes_received = relationship('Like', foreign_keys='Like.to_user_id', back_populates='to_user')
-
-    # Отношения для дизлайков
-    dislikes_given = relationship('Dislike', foreign_keys='Dislike.user_id', back_populates='from_user')
-    dislikes_received = relationship('Dislike', foreign_keys='Dislike.to_user_id', back_populates='to_user')
+    # Define relationships explicitly
+    likes_given = relationship(
+        'Like',
+        foreign_keys='Like.user_id',
+        back_populates='user'
+    )
+    likes_received = relationship(
+        'Like',
+        foreign_keys='Like.target_user_id',
+        back_populates='target_user'
+    )
+    dislikes_given = relationship(
+        'Dislike',
+        foreign_keys='Dislike.user_id',
+        back_populates='user'
+    )
+    dislikes_received = relationship(
+        'Dislike',
+        foreign_keys='Dislike.target_user_id',
+        back_populates='target_user'
+    )

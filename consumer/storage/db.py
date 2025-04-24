@@ -3,9 +3,15 @@ from uuid import uuid4
 from asyncpg import Connection
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase
 from typing_extensions import AsyncGenerator
 
 from config.settings import settings
+
+
+class Base(DeclarativeBase):
+    """Base class for all database models."""
+    pass
 
 
 class CConnection(Connection):

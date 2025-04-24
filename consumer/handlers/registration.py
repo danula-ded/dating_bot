@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from consumer.logger import logger
 from consumer.schema.registration import RegistrationMessage
 from consumer.storage.db import async_session
-from consumer.storage.redis import store_user_profiles
+from consumer.services.profile_service import load_and_store_matching_profiles
 from src.model.city import City
 from src.model.profile import Profile
 from src.model.user import User
@@ -27,36 +27,6 @@ async def get_or_create_city(db: AsyncSession, city_name: str | None) -> City:
         await db.flush()  # Получаем ID нового города
 
     return city
-
-
-async def load_matching_profiles(
-    db: AsyncSession, user_id: int, preferred_gender: str, 
-    preferred_age_min: int, preferred_age_max: int
-) -> list:
-    """Загружает случайные анкеты для пользователя."""
-    # Загружаем случайные анкеты
-    matching_profiles = await db.execute(
-        select(Profile, User)
-        .join(User, Profile.user_id == User.user_id)
-        .where(Profile.user_id != user_id)  # Исключаем профиль самого пользователя
-        .order_by(func.random())  # Случайный порядок
-        .limit(5)
-    )
-    
-    profiles_data = []
-    for profile, matched_user in matching_profiles:
-        profile_dict = {
-            'user_id': matched_user.user_id,
-            'first_name': matched_user.first_name,
-            'age': matched_user.age,
-            'gender': matched_user.gender,
-            'bio': profile.bio,
-            'photo_url': profile.photo_url
-        }
-        profiles_data.append(profile_dict)
-    
-    logger.info('Загружено %d случайных анкет для пользователя %s', len(profiles_data), user_id)
-    return profiles_data
 
 
 async def handle_registration(message: RegistrationMessage) -> None:
@@ -103,41 +73,29 @@ async def handle_registration(message: RegistrationMessage) -> None:
                 # Обновляем существующий профиль
                 existing_profile.bio = message.profile.bio
                 existing_profile.photo_url = message.profile.photo_url
-                existing_profile.preferred_gender = message.profile.preferred_gender
-                existing_profile.preferred_age_min = message.profile.preferred_age_min
-                existing_profile.preferred_age_max = message.profile.preferred_age_max
             else:
-                # Создаем новый профиль без указания profile_id
+                # Создаем новый профиль
                 profile = Profile(
                     user_id=message.profile.user_id,
                     bio=message.profile.bio,
-                    photo_url=message.profile.photo_url,
-                    preferred_gender=message.profile.preferred_gender,
-                    preferred_age_min=message.profile.preferred_age_min,
-                    preferred_age_max=message.profile.preferred_age_max,
+                    photo_url=message.profile.photo_url
                 )
                 db.add(profile)
-                await db.flush()  # Получаем ID нового профиля
 
             # Сохраняем изменения
             await db.commit()
-
-            # Загружаем подходящие анкеты и сохраняем их в Redis
-            matching_profiles = await load_matching_profiles(
-                db,
-                message.user.user_id,
-                message.profile.preferred_gender,
-                message.profile.preferred_age_min,
-                message.profile.preferred_age_max
+            
+            # Загружаем и сохраняем подходящие профили в Redis
+            await load_and_store_matching_profiles(
+                db=db,
+                user_id=message.user.user_id,
+                preferred_gender=message.user.preferred_gender,
+                preferred_age_min=message.user.preferred_age_min,
+                preferred_age_max=message.user.preferred_age_max
             )
             
-            if matching_profiles:
-                await store_user_profiles(message.user.user_id, matching_profiles)
-                logger.info('Анкеты успешно сохранены в Redis для пользователя %s', message.user.user_id)
-            else:
-                logger.warning('Не найдено подходящих анкет для пользователя %s', message.user.user_id)
-
-        logger.info('Пользователь %s успешно зарегистрирован/обновлен. Профиль создан/обновлен.', message.user.user_id)
+            logger.info('User %s registered successfully', message.user.user_id)
+            
     except Exception as e:
-        logger.error('Ошибка при регистрации пользователя %s: %s', message.user.user_id, e)
+        logger.error('Error handling registration: %s', e)
         raise
