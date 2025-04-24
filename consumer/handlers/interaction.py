@@ -52,6 +52,9 @@ async def handle_like(body: dict) -> None:
             body,
             str(e)
         )
+        # Add traceback for better debugging
+        import traceback
+        logger.error('Traceback: %s', traceback.format_exc())
 
 
 async def handle_dislike(body: dict) -> None:
@@ -100,4 +103,7 @@ async def handle_dislike(body: dict) -> None:
             'Error handling dislike event with data %s: %s',
             body,
             str(e)
-        ) 
+        )
+        # Add traceback for better debugging
+        import traceback
+        logger.error('Traceback: %s', traceback.format_exc()) 

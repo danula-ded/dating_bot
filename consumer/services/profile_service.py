@@ -64,7 +64,7 @@ async def load_and_store_matching_profiles(
                 ),
             )
         )
-        .group_by(Profile.user_id, User.user_id)
+        .group_by(Profile.profile_id, Profile.user_id, User.user_id)
     )
     
     # Вычисляем итоговый скор с учетом предпочтений
@@ -104,7 +104,8 @@ async def load_and_store_matching_profiles(
         .outerjoin(Dislike, User.user_id == Dislike.target_user_id)
         .where(
             and_(
-                Profile.user_id != user_id,
+                Profile.user_id != user_id,  # Исключаем профиль самого пользователя
+                # Исключаем профили, которые пользователь уже лайкал или дизлайкал
                 ~Profile.user_id.in_(
                     select(Like.target_user_id).where(Like.user_id == user_id)
                 ),
@@ -113,7 +114,7 @@ async def load_and_store_matching_profiles(
                 ),
             )
         )
-        .group_by(Profile.user_id, User.user_id)
+        .group_by(Profile.profile_id, Profile.user_id, User.user_id)
         .order_by(desc('total_score'))
         .limit(limit)
     )

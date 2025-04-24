@@ -73,25 +73,31 @@ async def handle_registration(message: RegistrationMessage) -> None:
                 # Обновляем существующий профиль
                 existing_profile.bio = message.profile.bio
                 existing_profile.photo_url = message.profile.photo_url
+                existing_profile.preferred_gender = message.profile.preferred_gender
+                existing_profile.preferred_age_min = message.profile.preferred_age_min
+                existing_profile.preferred_age_max = message.profile.preferred_age_max
             else:
                 # Создаем новый профиль
                 profile = Profile(
                     user_id=message.profile.user_id,
                     bio=message.profile.bio,
-                    photo_url=message.profile.photo_url
+                    photo_url=message.profile.photo_url,
+                    preferred_gender=message.profile.preferred_gender,
+                    preferred_age_min=message.profile.preferred_age_min,
+                    preferred_age_max=message.profile.preferred_age_max
                 )
                 db.add(profile)
 
             # Сохраняем изменения
             await db.commit()
-            
+
             # Загружаем и сохраняем подходящие профили в Redis
             await load_and_store_matching_profiles(
                 db=db,
                 user_id=message.user.user_id,
-                preferred_gender=message.user.preferred_gender,
-                preferred_age_min=message.user.preferred_age_min,
-                preferred_age_max=message.user.preferred_age_max
+                preferred_gender=message.profile.preferred_gender,
+                preferred_age_min=message.profile.preferred_age_min,
+                preferred_age_max=message.profile.preferred_age_max
             )
             
             logger.info('User %s registered successfully', message.user.user_id)

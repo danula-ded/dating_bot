@@ -1,4 +1,5 @@
 import json
+import msgpack
 from typing import Optional
 
 import aio_pika
@@ -17,15 +18,15 @@ async def send_profile_request(
     Send a profile request to the common queue.
     
     Args:
-        user_id: The ID of the user requesting profiles
-        action: The action to perform ('search', 'like', 'dislike')
-        target_user_id: The ID of the target user (for like/dislike actions)
+        user_id: The ID of the user making the request
+        action: The type of request (search, view, etc.)
+        target_user_id: Optional ID of the target user
     """
     try:
         async with channel_pool.acquire() as channel:
             # Declare exchange
             exchange = await channel.declare_exchange(
-                'user_messages',  # Use the common queue
+                'user_messages',
                 ExchangeType.TOPIC,
                 durable=True
             )
@@ -33,27 +34,22 @@ async def send_profile_request(
             # Prepare message data
             message_data = {
                 'user_id': user_id,
-                'action': 'update_profile_redis',
-                'request_type': action
+                'action': action,
+                'target_user_id': target_user_id
             }
             
-            if target_user_id:
-                message_data['target_user_id'] = target_user_id
-            
-            # Publish message
+            # Publish message using msgpack
             await exchange.publish(
                 aio_pika.Message(
-                    body=json.dumps(message_data).encode(),
-                    content_type='application/json'
+                    body=msgpack.packb(message_data),
+                    content_type='application/x-msgpack'
                 ),
-                routing_key='profile.update_redis'
+                routing_key='user_messages'
             )
             
             logger.info(
-                'Sent profile request for user %s, action: %s%s',
-                user_id,
-                action,
-                f', target: {target_user_id}' if target_user_id else ''
+                'Sent profile request from user %s: action=%s, target=%s',
+                user_id, action, target_user_id
             )
             
     except Exception as e:
@@ -73,22 +69,25 @@ async def send_profile_update(profile_data: dict) -> None:
             # Declare exchange
             exchange = await channel.declare_exchange(
                 'user_messages',  # Use the common queue
-                ExchangeType.TOPIC,
+                ExchangeType.TOPIC,  # Changed to TOPIC to match existing exchange
                 durable=True
             )
             
-            # Publish message
+            # Prepare message data
+            message_data = {
+                'user_id': profile_data.get('user_id'),
+                'action': 'profile_update',
+                'field': 'profile_data',
+                'value': profile_data
+            }
+            
+            # Publish message using msgpack
             await exchange.publish(
                 aio_pika.Message(
-                    body=json.dumps({
-                        'user_id': profile_data.get('user_id'),
-                        'action': 'profile_update',
-                        'field': 'profile_data',
-                        'value': profile_data
-                    }).encode(),
-                    content_type='application/json'
+                    body=msgpack.packb(message_data),
+                    content_type='application/x-msgpack'
                 ),
-                routing_key='profile.update'
+                routing_key='user_messages'  # Match the queue name
             )
             
             logger.info(
@@ -121,7 +120,7 @@ async def send_interaction_event(user_id: int, target_user_id: int, action: str)
         async with channel_pool.acquire() as channel:
             # Declare exchange
             exchange = await channel.declare_exchange(
-                'user_messages',  # Use the common queue
+                'user_messages',
                 ExchangeType.TOPIC,
                 durable=True
             )
@@ -139,13 +138,13 @@ async def send_interaction_event(user_id: int, target_user_id: int, action: str)
                 message_data
             )
             
-            # Publish message
+            # Publish message using msgpack
             await exchange.publish(
                 aio_pika.Message(
-                    body=json.dumps(message_data).encode(),
-                    content_type='application/json'
+                    body=msgpack.packb(message_data),
+                    content_type='application/x-msgpack'
                 ),
-                routing_key='profile.interaction'
+                routing_key='user_messages'
             )
             
             logger.info(
