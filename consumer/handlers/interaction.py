@@ -1,5 +1,3 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from consumer.logger import logger
 from consumer.services.interaction_service import process_like, process_dislike
 from consumer.storage import get_db_session
@@ -15,8 +13,9 @@ async def handle_like(body: dict) -> None:
     try:
         logger.info('Received like event with data: %s', body)
         
-        user_id = body.get('user_id')
-        target_user_id = body.get('target_user_id')
+        # Access attributes directly from the Pydantic model
+        user_id = body.user_id
+        target_user_id = body.target_user_id
         
         if not user_id or not target_user_id:
             logger.error(
@@ -38,6 +37,15 @@ async def handle_like(body: dict) -> None:
                     'Successfully processed like from user %s to user %s',
                     user_id,
                     target_user_id
+                )
+                
+                # Check if we need to update profiles in Redis
+                # This should be done only after all messages are processed
+                # and each user has received a reaction
+                # For now, we'll just log that this would happen
+                logger.info(
+                    'Profile update would be triggered for user %s after all messages are processed',
+                    user_id
                 )
             else:
                 logger.warning(
@@ -67,8 +75,9 @@ async def handle_dislike(body: dict) -> None:
     try:
         logger.info('Received dislike event with data: %s', body)
         
-        user_id = body.get('user_id')
-        target_user_id = body.get('target_user_id')
+        # Access attributes directly from the Pydantic model
+        user_id = body.user_id
+        target_user_id = body.target_user_id
         
         if not user_id or not target_user_id:
             logger.error(
@@ -90,6 +99,15 @@ async def handle_dislike(body: dict) -> None:
                     'Successfully processed dislike from user %s to user %s',
                     user_id,
                     target_user_id
+                )
+                
+                # Check if we need to update profiles in Redis
+                # This should be done only after all messages are processed
+                # and each user has received a reaction
+                # For now, we'll just log that this would happen
+                logger.info(
+                    'Profile update would be triggered for user %s after all messages are processed',
+                    user_id
                 )
             else:
                 logger.warning(

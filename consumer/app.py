@@ -1,5 +1,5 @@
 import logging.config
-import asyncio
+from collections import defaultdict
 
 import msgpack
 import aio_pika
@@ -7,7 +7,6 @@ import aio_pika
 from consumer.handlers.registration import handle_registration
 from consumer.handlers.upload_file import upload_file_handler
 from consumer.handlers.show_file import show_files
-from consumer.handlers.profile_update import handle_profile_update
 from consumer.handlers.profile import handle_profile_redis_update
 from consumer.handlers.interaction import handle_like, handle_dislike
 from consumer.logger import LOGGING_CONFIG, correlation_id_ctx, logger
@@ -18,6 +17,12 @@ from consumer.schema.interaction import InteractionMessage
 from consumer.storage import rabbit
 from consumer.services.profile_service import load_and_store_matching_profiles
 from consumer.storage.db import async_session
+
+
+# Track processed messages per user
+processed_messages = defaultdict(int)
+# Batch size for triggering profile updates
+BATCH_SIZE = 10
 
 
 async def start_consumer() -> None:
@@ -33,7 +38,7 @@ async def start_consumer() -> None:
         exchange = await channel.declare_exchange(
             'user_messages',
             aio_pika.ExchangeType.TOPIC,
-            durable=True
+            durable=True,
         )
 
         # Declaring queue
@@ -59,20 +64,32 @@ async def start_consumer() -> None:
 
                             if body.action == 'like':
                                 await handle_like(body)
-                                # Request new profiles after like
-                                await handle_profile_redis_update({
-                                    'user_id': body.user_id,
-                                    'action': 'update_profile_redis',
-                                    'request_type': 'like'
-                                })
+                                # Increment processed messages counter for this user
+                                processed_messages[body.user_id] += 1
+                                # Check if we need to update profiles
+                                if processed_messages[body.user_id] >= BATCH_SIZE:
+                                    logger.info('Batch size reached for user %s, updating profiles', body.user_id)
+                                    await handle_profile_redis_update({
+                                        'user_id': body.user_id,
+                                        'action': 'update_profile_redis',
+                                        'request_type': 'batch_update',
+                                    })
+                                    # Reset counter
+                                    processed_messages[body.user_id] = 0
                             elif body.action == 'dislike':
                                 await handle_dislike(body)
-                                # Request new profiles after dislike
-                                await handle_profile_redis_update({
-                                    'user_id': body.user_id,
-                                    'action': 'update_profile_redis',
-                                    'request_type': 'dislike'
-                                })
+                                # Increment processed messages counter for this user
+                                processed_messages[body.user_id] += 1
+                                # Check if we need to update profiles
+                                if processed_messages[body.user_id] >= BATCH_SIZE:
+                                    logger.info('Batch size reached for user %s, updating profiles', body.user_id)
+                                    await handle_profile_redis_update({
+                                        'user_id': body.user_id,
+                                        'action': 'update_profile_redis',
+                                        'request_type': 'batch_update',
+                                    })
+                                    # Reset counter
+                                    processed_messages[body.user_id] = 0
                             elif body.action == 'search':
                                 # Handle search request
                                 async with async_session() as db:

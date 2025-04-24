@@ -80,12 +80,28 @@ async def get_next_profile(user_id: int) -> Optional[dict]:
     key = f"user:{user_id}:profiles"
     
     try:
+        # Check if there are any profiles in the list
+        profile_count = await redis.llen(key)
+        if profile_count == 0:
+            logger.info('No profiles for user %s in Redis', user_id)
+            # Return a special indicator that there are no profiles
+            return {"last_profile": True, "user_id": user_id, "no_profiles": True}
+        
         # Get the first profile from the list
         data = await redis.lpop(key)
         if data:
             profile = json.loads(data)
             logger.info('Retrieved next profile for user %s from Redis', user_id)
+            
+            # Check if this was the last profile
+            remaining_count = await redis.llen(key)
+            if remaining_count == 0:
+                logger.info('This was the last profile for user %s in Redis', user_id)
+                # Add a flag to indicate this was the last profile
+                profile["last_profile"] = True
+            
             return profile
+        
         return None
     except Exception as e:
         logger.error('Error retrieving next profile from Redis for user %s: %s', user_id, e)
@@ -100,11 +116,11 @@ async def store_like(user_id: int, target_user_id: int) -> None:
         target_user_id: The ID of the user who received the like
     """
     redis = await get_redis()
-    key = f"user:{user_id}:likes"
+    key = f"user:{target_user_id}:likes"
     
     try:
-        # Add target_user_id to the set of users liked by user_id
-        await redis.sadd(key, target_user_id)
+        # Add user_id to the set of users who liked target_user_id
+        await redis.sadd(key, user_id)
         logger.info('Stored like from user %s to user %s in Redis', user_id, target_user_id)
     except Exception as e:
         logger.error('Error storing like in Redis: %s', e)
@@ -112,13 +128,13 @@ async def store_like(user_id: int, target_user_id: int) -> None:
 
 async def get_likes(user_id: int) -> Set[str]:
     """
-    Get all users that a user has liked from Redis.
+    Get all users that have liked a user from Redis.
     
     Args:
         user_id: The ID of the user
         
     Returns:
-        Set of user IDs that the user has liked
+        Set of user IDs that have liked the user
     """
     redis = await get_redis()
     key = f"user:{user_id}:likes"

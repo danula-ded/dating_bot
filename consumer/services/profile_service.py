@@ -38,35 +38,6 @@ async def load_and_store_matching_profiles(
         logger.error('User %s not found', user_id)
         return []
     
-    # Базовый запрос для получения всех подходящих профилей
-    query = (
-        select(
-            Profile,
-            User,
-            # Базовый счетчик активности (количество лайков и дизлайков)
-            func.count(Like.id).label('likes_count'),
-            func.count(Dislike.id).label('dislikes_count'),
-            # Счетчик общего скора
-            (func.count(Like.id) + func.count(Dislike.id)).label('activity_score'),
-        )
-        .join(User, Profile.user_id == User.user_id)
-        .outerjoin(Like, User.user_id == Like.target_user_id)
-        .outerjoin(Dislike, User.user_id == Dislike.target_user_id)
-        .where(
-            and_(
-                Profile.user_id != user_id,  # Исключаем профиль самого пользователя
-                # Исключаем профили, которые пользователь уже лайкал или дизлайкал
-                ~Profile.user_id.in_(
-                    select(Like.target_user_id).where(Like.user_id == user_id)
-                ),
-                ~Profile.user_id.in_(
-                    select(Dislike.target_user_id).where(Dislike.user_id == user_id)
-                ),
-            )
-        )
-        .group_by(Profile.profile_id, Profile.user_id, User.user_id)
-    )
-    
     # Вычисляем итоговый скор с учетом предпочтений
     query = (
         select(
@@ -75,7 +46,8 @@ async def load_and_store_matching_profiles(
             func.count(Like.id).label('likes_count'),
             func.count(Dislike.id).label('dislikes_count'),
             (
-                (func.count(Like.id) + func.count(Dislike.id))  # Базовый скор активности
+                # Базовый скор активности (минимум 1, чтобы не было нулевых значений)
+                (func.count(Like.id) + func.count(Dislike.id) + 1)
                 * case(
                     # Множитель за совпадение пола
                     (User.gender == preferred_gender, 2),
@@ -97,6 +69,8 @@ async def load_and_store_matching_profiles(
                     ),
                     else_=1,
                 )
+                # Добавляем случайный множитель для разнообразия (от 0.8 до 1.2)
+                * (0.8 + func.random() * 0.4)
             ).label('total_score'),
         )
         .join(User, Profile.user_id == User.user_id)
@@ -124,7 +98,10 @@ async def load_and_store_matching_profiles(
     
     # Форматируем результаты
     profiles_data = []
-    for profile, matched_user, _likes_count, _dislikes_count, total_score in result:
+    for profile, matched_user, likes_count, dislikes_count, total_score in result:
+        # Округляем score до 2 знаков после запятой для удобства чтения
+        rounded_score = round(float(total_score), 2)
+        
         profile_dict = {
             'user_id': matched_user.user_id,
             'first_name': matched_user.first_name,
@@ -132,7 +109,9 @@ async def load_and_store_matching_profiles(
             'gender': matched_user.gender,
             'bio': profile.bio,
             'photo_url': profile.photo_url,
-            'score': total_score,  # Добавляем скор для отладки
+            'score': rounded_score,  # Используем округленный скор
+            'likes_count': likes_count,  # Добавляем количество лайков
+            'dislikes_count': dislikes_count,  # Добавляем количество дизлайков
         }
         profiles_data.append(profile_dict)
     
