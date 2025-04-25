@@ -40,10 +40,7 @@ async def upload_file_handler(body: FileMessage) -> None:
         async with async_session() as db:
             # Проверяем, не существует ли уже запись
             existing_record = await db.execute(
-                select(FileRecord).where(
-                    FileRecord.user_id == user_id,
-                    FileRecord.file_name == file_name
-                )
+                select(FileRecord).where(FileRecord.user_id == user_id, FileRecord.file_name == file_name)
             )
             if existing_record.scalar_one_or_none():
                 logger.warning('Файл %s уже существует в БД для пользователя %s', file_name, user_id)

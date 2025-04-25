@@ -22,7 +22,9 @@ async def migrate() -> None:
             # Сброс всех последовательностей
             await conn.execute(text('DROP SEQUENCE IF EXISTS profiles_profile_id_seq CASCADE;'))
             await conn.execute(text('CREATE SEQUENCE profiles_profile_id_seq START WITH 1;'))
-            await conn.execute(text('ALTER TABLE profiles ALTER COLUMN profile_id SET DEFAULT nextval(\'profiles_profile_id_seq\');'))
+            await conn.execute(
+                text('ALTER TABLE profiles ALTER COLUMN profile_id SET DEFAULT nextval(\'profiles_profile_id_seq\');')
+            )
             await conn.execute(text('ALTER SEQUENCE profiles_profile_id_seq OWNED BY profiles.profile_id;'))
             print('Последовательности сброшены')
 

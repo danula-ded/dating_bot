@@ -145,16 +145,14 @@ async def handle_file_upload(message: types.Message, state: FSMContext) -> None:
                         context.get(HeaderKeys.correlation_id),
                         user,
                         profile,
-                        'user_registration'
+                        'user_registration',
                     )
 
                     await exchange.publish(
                         aio_pika.Message(
                             body=msgpack.packb(
                                 RegistrationMessage(
-                                    user=user,
-                                    profile=profile,
-                                    correlation_id=context.get(HeaderKeys.correlation_id)
+                                    user=user, profile=profile, correlation_id=context.get(HeaderKeys.correlation_id)
                                 ).model_dump()
                             ),
                             content_type='application/x-msgpack',

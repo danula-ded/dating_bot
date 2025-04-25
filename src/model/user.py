@@ -17,23 +17,7 @@ class User(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
 
     # Define relationships explicitly
-    likes_given = relationship(
-        'Like',
-        foreign_keys='Like.user_id',
-        back_populates='user'
-    )
-    likes_received = relationship(
-        'Like',
-        foreign_keys='Like.target_user_id',
-        back_populates='target_user'
-    )
-    dislikes_given = relationship(
-        'Dislike',
-        foreign_keys='Dislike.user_id',
-        back_populates='user'
-    )
-    dislikes_received = relationship(
-        'Dislike',
-        foreign_keys='Dislike.target_user_id',
-        back_populates='target_user'
-    )
+    likes_given = relationship('Like', foreign_keys='Like.user_id', back_populates='user')
+    likes_received = relationship('Like', foreign_keys='Like.target_user_id', back_populates='target_user')
+    dislikes_given = relationship('Dislike', foreign_keys='Dislike.user_id', back_populates='user')
+    dislikes_received = relationship('Dislike', foreign_keys='Dislike.target_user_id', back_populates='target_user')

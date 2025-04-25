@@ -90,11 +90,11 @@ async def handle_text_message(message: types.Message, state: FSMContext) -> None
         age_max = int(message.text)
         user_data = await state.get_data()
         age_min = user_data.get('preferred_age_min', 18)
-        
+
         if age_max < age_min:
             await message.reply(f'Максимальный возраст должен быть не меньше минимального ({age_min}).')
             return
-        
+
         await state.update_data(preferred_age_max=age_max)
         await state.set_state(AuthGroup.registration_photo)
         await message.reply('Отправьте свою фотографию для профиля:')

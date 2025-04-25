@@ -19,8 +19,6 @@ from consumer.services.profile_service import load_and_store_matching_profiles
 from consumer.storage.db import async_session
 
 
-
-
 # Track processed messages per user
 processed_messages = defaultdict(int)
 # Batch size for triggering profile updates
@@ -45,10 +43,10 @@ async def start_consumer() -> None:
 
         # Declaring queue
         queue = await channel.declare_queue(queue_name, durable=True)
-        
+
         # Binding queue to exchange with routing key
         await queue.bind(exchange, routing_key='user_messages')
-        
+
         logger.info('Consumer started and bound to exchange %s with routing key %s', exchange.name, 'user_messages')
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
@@ -71,11 +69,13 @@ async def start_consumer() -> None:
                                 # Check if we need to update profiles
                                 if processed_messages[body.user_id] >= BATCH_SIZE:
                                     logger.info('Batch size reached for user %s, updating profiles', body.user_id)
-                                    await handle_profile_redis_update({
-                                        'user_id': body.user_id,
-                                        'action': 'update_profile_redis',
-                                        'request_type': 'batch_update',
-                                    })
+                                    await handle_profile_redis_update(
+                                        {
+                                            'user_id': body.user_id,
+                                            'action': 'update_profile_redis',
+                                            'request_type': 'batch_update',
+                                        }
+                                    )
                                     # Reset counter
                                     processed_messages[body.user_id] = 0
                             elif body.action == 'dislike':
@@ -85,11 +85,13 @@ async def start_consumer() -> None:
                                 # Check if we need to update profiles
                                 if processed_messages[body.user_id] >= BATCH_SIZE:
                                     logger.info('Batch size reached for user %s, updating profiles', body.user_id)
-                                    await handle_profile_redis_update({
-                                        'user_id': body.user_id,
-                                        'action': 'update_profile_redis',
-                                        'request_type': 'batch_update',
-                                    })
+                                    await handle_profile_redis_update(
+                                        {
+                                            'user_id': body.user_id,
+                                            'action': 'update_profile_redis',
+                                            'request_type': 'batch_update',
+                                        }
+                                    )
                                     # Reset counter
                                     processed_messages[body.user_id] = 0
                             elif body.action == 'search':
@@ -98,12 +100,10 @@ async def start_consumer() -> None:
                                     # Get user preferences from profile
                                     from sqlalchemy import select
                                     from src.model.profile import Profile
-                                    
-                                    result = await db.execute(
-                                        select(Profile).where(Profile.user_id == body.user_id)
-                                    )
+
+                                    result = await db.execute(select(Profile).where(Profile.user_id == body.user_id))
                                     profile = result.scalar_one_or_none()
-                                    
+
                                     if profile:
                                         # Load and store matching profiles
                                         await load_and_store_matching_profiles(
@@ -111,7 +111,7 @@ async def start_consumer() -> None:
                                             user_id=body.user_id,
                                             preferred_gender=profile.preferred_gender,
                                             preferred_age_min=profile.preferred_age_min,
-                                            preferred_age_max=profile.preferred_age_max
+                                            preferred_age_max=profile.preferred_age_max,
                                         )
                                         logger.info('Matching profiles loaded for user %s', body.user_id)
                                     else:
@@ -135,7 +135,9 @@ async def start_consumer() -> None:
                             except Exception:
                                 # If not FileMessage, try as RegistrationMessage
                                 try:
-                                    body: RegistrationMessage = RegistrationMessage.model_validate(msgpack.unpackb(message.body))
+                                    body: RegistrationMessage = RegistrationMessage.model_validate(
+                                        msgpack.unpackb(message.body)
+                                    )
                                     logger.info('Registration message received: %s', body)
 
                                     if body.action == 'user_registration':

@@ -16,7 +16,7 @@ async def get_or_create_city(db: AsyncSession, city_name: str | None) -> City:
     # Если city_name не указан, используем 'Не указан' как значение по умолчанию
     if not city_name:
         city_name = 'Сочи'
-    
+
     # Ищем город по имени
     result = await db.execute(select(City).where(City.name == city_name))
     city = result.scalar_one_or_none()
@@ -70,7 +70,7 @@ async def handle_registration(message: RegistrationMessage) -> None:
                 rating = Rating(
                     user_id=user.user_id,
                     profile_score=5.0,  # Начальный profile_score
-                    activity_score=0.0   # Начальный activity_score
+                    activity_score=0.0,  # Начальный activity_score
                 )
                 db.add(rating)
 
@@ -93,7 +93,7 @@ async def handle_registration(message: RegistrationMessage) -> None:
                     photo_url=message.profile.photo_url,
                     preferred_gender=message.profile.preferred_gender,
                     preferred_age_min=message.profile.preferred_age_min,
-                    preferred_age_max=message.profile.preferred_age_max
+                    preferred_age_max=message.profile.preferred_age_max,
                 )
                 db.add(profile)
 
@@ -106,11 +106,11 @@ async def handle_registration(message: RegistrationMessage) -> None:
                 user_id=message.user.user_id,
                 preferred_gender=message.profile.preferred_gender,
                 preferred_age_min=message.profile.preferred_age_min,
-                preferred_age_max=message.profile.preferred_age_max
+                preferred_age_max=message.profile.preferred_age_max,
             )
-            
+
             logger.info('User %s registered successfully', message.user.user_id)
-            
+
     except Exception as e:
         logger.error('Error handling registration: %s', e)
         raise

@@ -29,10 +29,7 @@ async def handle_registration(message: types.Message, state: FSMContext) -> None
         if not name:
             await message.reply('Пожалуйста, введите ваше имя текстом.')
             return
-        await state.update_data(
-            first_name=name,
-            username=message.from_user.username or f'user_{message.from_user.id}'
-        )
+        await state.update_data(first_name=name, username=message.from_user.username or f'user_{message.from_user.id}')
         logger.info('Updated registration data for user %s: %s', message.from_user.id, await state.get_data())
         await state.set_state(AuthGroup.registration_age)
         await message.reply('Отлично! Теперь введите ваш возраст (только число):')
@@ -108,11 +105,11 @@ async def handle_registration(message: types.Message, state: FSMContext) -> None
         age_max = int(message.text)
         user_data = await state.get_data()
         age_min = user_data.get('preferred_age_min', 18)
-        
+
         if age_max < age_min:
             await message.reply(f'Максимальный возраст должен быть не меньше минимального ({age_min}).')
             return
-        
+
         await state.update_data(preferred_age_max=age_max)
         logger.info('Updated registration data for user %s: %s', message.from_user.id, await state.get_data())
         await state.set_state(AuthGroup.registration_photo)

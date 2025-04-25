@@ -8,4 +8,4 @@ class Profile(BaseModel):
     photo_url: Optional[str] = Field(None, description="URL to user's photo")
     preferred_gender: Optional[str] = Field(None, description="Preferred gender for matches")
     preferred_age_min: Optional[int] = Field(None, description="Minimum preferred age")
-    preferred_age_max: Optional[int] = Field(None, description="Maximum preferred age") 
+    preferred_age_max: Optional[int] = Field(None, description="Maximum preferred age")

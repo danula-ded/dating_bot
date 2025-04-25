@@ -1,1 +1,1 @@
-"""Notification service package.""" 
+"""Notification service package."""

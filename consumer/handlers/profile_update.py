@@ -54,4 +54,4 @@ async def handle_profile_update(message: dict):
 
     except Exception as e:
         logger.error('Error processing profile update: %s', str(e))
-        raise 
+        raise
