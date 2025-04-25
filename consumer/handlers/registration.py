@@ -8,6 +8,7 @@ from consumer.services.profile_service import load_and_store_matching_profiles
 from src.model.city import City
 from src.model.profile import Profile
 from src.model.user import User
+from src.model.rating import Rating
 
 
 async def get_or_create_city(db: AsyncSession, city_name: str | None) -> City:
@@ -64,6 +65,14 @@ async def handle_registration(message: RegistrationMessage) -> None:
                 )
                 db.add(user)
                 await db.flush()  # Получаем ID нового пользователя
+
+                # Создаем начальный рейтинг для нового пользователя
+                rating = Rating(
+                    user_id=user.user_id,
+                    profile_score=5.0,  # Начальный profile_score
+                    activity_score=0.0   # Начальный activity_score
+                )
+                db.add(rating)
 
             # Проверяем существование профиля
             result = await db.execute(select(Profile).where(Profile.user_id == message.profile.user_id))

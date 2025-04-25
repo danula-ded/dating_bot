@@ -131,6 +131,18 @@ services:
       redis:
         condition: service_healthy
 
+  # notification:
+  #   build:
+  #     dockerfile: notification/Dockerfile
+  #     context: .
+  #   volumes:
+  #     - ./notification:/app/notification
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #     rabbitmq:
+  #       condition: service_healthy
+
 volumes:
   postgres_data:
   minio_data:

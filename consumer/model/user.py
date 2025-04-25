@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy import Column, Integer, String, DateTime, func, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
 
 from consumer.model.meta import Base
@@ -10,9 +10,13 @@ class User(Base):
     """Модель пользователя."""
     __tablename__ = 'users'
 
-    user_id = Column(Integer, primary_key=True)
-    username = Column(String, nullable=False)
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    user_id = Column(BigInteger, primary_key=True)
+    username = Column(String(64), unique=True)
+    first_name = Column(String(64), nullable=False)
+    age = Column(Integer)
+    gender = Column(String(10))
+    city_id = Column(Integer, ForeignKey('cities.city_id'))
+    created_at = Column(DateTime, server_default=func.now())
 
     # Отношения для лайков и дизлайков
     likes_given = relationship(
@@ -35,6 +39,9 @@ class User(Base):
         foreign_keys='Dislike.target_user_id',
         back_populates='target_user'
     )
+    
+    # Отношение для рейтинга
+    rating = relationship('Rating', back_populates='user', uselist=False, cascade='all, delete-orphan')
 
 
 class User(BaseModel):

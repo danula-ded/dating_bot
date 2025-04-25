@@ -4,11 +4,29 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.storage.redis import get_next_profile
+from src.storage.redis import get_next_profile, get_user_profiles
 from src.api.producer import send_profile_request, send_interaction_event
 from src.logger import logger
 
 router = Router()
+
+
+async def check_profiles_in_redis(user_id: int) -> bool:
+    """
+    Check if there are profiles available in Redis for the user.
+    
+    Args:
+        user_id: The ID of the user
+        
+    Returns:
+        bool: True if profiles exist, False otherwise
+    """
+    try:
+        profiles = await get_user_profiles(user_id)
+        return profiles is not None and len(profiles) > 0
+    except Exception as e:
+        logger.error('Error checking profiles in Redis for user %s: %s', user_id, str(e))
+        return False
 
 
 @router.message(Command('search'))
@@ -18,11 +36,9 @@ async def handle_search_command(message: Message, state: FSMContext):
     logger.info('Search command received from user %s', user_id)
     
     try:
-        # Get next profile from Redis
-        profile = await get_next_profile(user_id)
-        logger.info('Retrieved next profile from Redis for user %s: %s', user_id, profile)
-        
-        if not profile:
+        # Check if there are profiles in Redis
+        has_profiles = await check_profiles_in_redis(user_id)
+        if not has_profiles:
             # No profiles in Redis, request more from the queue
             logger.info('No profiles in Redis for user %s, requesting more', user_id)
             await send_profile_request(user_id, action='search')
@@ -38,6 +54,16 @@ async def handle_search_command(message: Message, state: FSMContext):
                 'Нажмите кнопку "Обновить", чтобы проверить наличие новых профилей.',
                 reply_markup=keyboard.as_markup()
             )
+            return
+        
+        # Get next profile from Redis
+        profile = await get_next_profile(user_id)
+        logger.info('Retrieved next profile from Redis for user %s: %s', user_id, profile)
+        
+        if not profile:
+            # This should not happen if check_profiles_in_redis returned True
+            logger.error('No profile returned from Redis for user %s despite check passing', user_id)
+            await message.answer('Произошла ошибка при загрузке профиля. Пожалуйста, попробуйте позже.')
             return
         
         # Create keyboard with like/dislike buttons
@@ -92,23 +118,10 @@ async def handle_like(callback: CallbackQuery, state: FSMContext):
                 'Нажмите кнопку "Обновить", чтобы проверить наличие новых профилей.',
                 reply_markup=keyboard.as_markup()
             )
-        elif isinstance(profile, dict) and profile.get('last_profile'):
-            # This was the last profile in the selection
-            # Create keyboard with refresh button
-            keyboard = InlineKeyboardBuilder()
-            keyboard.button(text='🔄 Обновить', callback_data='refresh_profiles')
-            keyboard.adjust(1)
             
-            # Show "last profile" message with refresh button
-            await callback.message.edit_text(
-                '❤️ Вы поставили лайк! Это был последний профиль в подборке.\n\n'
-                'Нажмите кнопку "Обновить", чтобы проверить наличие новых профилей.',
-                reply_markup=keyboard.as_markup()
-            )
-            
-            # Request new profiles from the queue
+            # Request new profiles from the queue only when Redis is empty
             await send_profile_request(user_id, action='search')
-            logger.info('Profile update request sent for user %s after last profile', user_id)
+            logger.info('Profile update request sent for user %s after empty profiles', user_id)
         else:
             # Create keyboard for next profile
             keyboard = InlineKeyboardBuilder()
@@ -178,23 +191,10 @@ async def handle_dislike(callback: CallbackQuery, state: FSMContext):
                 'Нажмите кнопку "Обновить", чтобы проверить наличие новых профилей.',
                 reply_markup=keyboard.as_markup()
             )
-        elif isinstance(profile, dict) and profile.get('last_profile'):
-            # This was the last profile in the selection
-            # Create keyboard with refresh button
-            keyboard = InlineKeyboardBuilder()
-            keyboard.button(text='🔄 Обновить', callback_data='refresh_profiles')
-            keyboard.adjust(1)
             
-            # Show "last profile" message with refresh button
-            await callback.message.edit_text(
-                '👎 Вы поставили дизлайк! Это был последний профиль в подборке.\n\n'
-                'Нажмите кнопку "Обновить", чтобы проверить наличие новых профилей.',
-                reply_markup=keyboard.as_markup()
-            )
-            
-            # Request new profiles from the queue
+            # Request new profiles from the queue only when Redis is empty
             await send_profile_request(user_id, action='search')
-            logger.info('Profile update request sent for user %s after last profile', user_id)
+            logger.info('Profile update request sent for user %s after empty profiles', user_id)
         else:
             # Create keyboard for next profile
             keyboard = InlineKeyboardBuilder()

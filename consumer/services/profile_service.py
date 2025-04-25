@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from consumer.logger import logger
 from consumer.storage.redis import store_user_profiles
 from consumer.model.interaction import Like, Dislike
+from consumer.model.rating import Rating
 from src.model.profile import Profile
 from src.model.user import User
 
@@ -38,16 +39,17 @@ async def load_and_store_matching_profiles(
         logger.error('User %s not found', user_id)
         return []
     
-    # Вычисляем итоговый скор с учетом предпочтений
+    # Вычисляем итоговый скор с учетом рейтингов и предпочтений
     query = (
         select(
             Profile,
             User,
+            Rating,
             func.count(Like.id).label('likes_count'),
             func.count(Dislike.id).label('dislikes_count'),
             (
-                # Базовый скор активности (минимум 1, чтобы не было нулевых значений)
-                (func.count(Like.id) + func.count(Dislike.id) + 1)
+                # Используем profile_score и activity_score из таблицы рейтинга
+                (Rating.profile_score + Rating.activity_score)
                 * case(
                     # Множитель за совпадение пола
                     (User.gender == preferred_gender, 2),
@@ -74,6 +76,7 @@ async def load_and_store_matching_profiles(
             ).label('total_score'),
         )
         .join(User, Profile.user_id == User.user_id)
+        .join(Rating, User.user_id == Rating.user_id)
         .outerjoin(Like, User.user_id == Like.target_user_id)
         .outerjoin(Dislike, User.user_id == Dislike.target_user_id)
         .where(
@@ -88,7 +91,7 @@ async def load_and_store_matching_profiles(
                 ),
             )
         )
-        .group_by(Profile.profile_id, Profile.user_id, User.user_id)
+        .group_by(Profile.profile_id, Profile.user_id, User.user_id, Rating.rating_id)
         .order_by(desc('total_score'))
         .limit(limit)
     )
@@ -98,7 +101,7 @@ async def load_and_store_matching_profiles(
     
     # Форматируем результаты
     profiles_data = []
-    for profile, matched_user, likes_count, dislikes_count, total_score in result:
+    for profile, matched_user, rating, likes_count, dislikes_count, total_score in result:
         # Округляем score до 2 знаков после запятой для удобства чтения
         rounded_score = round(float(total_score), 2)
         
@@ -110,6 +113,8 @@ async def load_and_store_matching_profiles(
             'bio': profile.bio,
             'photo_url': profile.photo_url,
             'score': rounded_score,  # Используем округленный скор
+            'profile_score': rating.profile_score,  # Добавляем profile_score
+            'activity_score': rating.activity_score,  # Добавляем activity_score
             'likes_count': likes_count,  # Добавляем количество лайков
             'dislikes_count': dislikes_count,  # Добавляем количество дизлайков
         }

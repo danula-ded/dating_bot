@@ -36,6 +36,8 @@ asgi-lifespan = "^2.1.0"
 minio = "^7.2.12"
 pathlib = "^1.0.1"
 requests = "^2.32.3"
+celery = "^5.3.6"
+flower = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "1.4"

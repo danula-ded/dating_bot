@@ -15,7 +15,6 @@ class User(Base):
     gender = Column(String(10))
     city_id = Column(Integer, ForeignKey("cities.city_id"))
     created_at = Column(TIMESTAMP, server_default=func.now())
-    active_score = Column(Integer, default=0)
 
     # Define relationships explicitly
     likes_given = relationship(

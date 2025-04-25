@@ -1,11 +1,11 @@
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import func
 
 from consumer.logger import logger
-from consumer.storage.redis import store_like, get_likes
+from consumer.storage.redis import store_like
 from src.model.user import User
 from consumer.model.interaction import Like, Dislike
+from consumer.model.rating import Rating
 
 
 async def process_like(
@@ -49,14 +49,14 @@ async def process_like(
         )
         db.add(new_like)
 
-        # Обновляем active_score для пользователя, которому поставили лайк
-        target_user = await db.execute(
-            select(User).where(User.user_id == target_user_id)
+        # Обновляем activity_score в таблице рейтинга
+        rating_result = await db.execute(
+            select(Rating).where(Rating.user_id == target_user_id)
         )
-        target_user = target_user.scalar_one_or_none()
-        if target_user:
-            # Увеличиваем active_score на 1, но не больше 5
-            target_user.active_score = min(target_user.active_score + 1, 5)
+        rating = rating_result.scalar_one_or_none()
+        if rating:
+            # Увеличиваем activity_score на 0.5, но не больше 10
+            rating.activity_score = min(rating.activity_score + 0.5, 10.0)
 
         # Сохраняем изменения в БД
         await db.commit()
@@ -123,14 +123,14 @@ async def process_dislike(
         )
         db.add(new_dislike)
 
-        # Обновляем active_score для пользователя, которому поставили дизлайк
-        target_user = await db.execute(
-            select(User).where(User.user_id == target_user_id)
+        # Обновляем activity_score в таблице рейтинга
+        rating_result = await db.execute(
+            select(Rating).where(Rating.user_id == target_user_id)
         )
-        target_user = target_user.scalar_one_or_none()
-        if target_user:
-            # Уменьшаем active_score на 1, но не меньше 0
-            target_user.active_score = max(target_user.active_score - 1, 0)
+        rating = rating_result.scalar_one_or_none()
+        if rating:
+            # Уменьшаем activity_score на 0.5, но не меньше 0
+            rating.activity_score = max(rating.activity_score - 0.5, 0.0)
 
         # Сохраняем изменения в БД
         await db.commit()

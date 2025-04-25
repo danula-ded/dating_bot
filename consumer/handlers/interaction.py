@@ -1,6 +1,7 @@
 from consumer.logger import logger
 from consumer.services.interaction_service import process_like, process_dislike
 from consumer.storage import get_db_session
+from src.api.producer import send_profile_request
 
 
 async def handle_like(body: dict) -> None:
@@ -39,12 +40,10 @@ async def handle_like(body: dict) -> None:
                     target_user_id
                 )
                 
-                # Check if we need to update profiles in Redis
-                # This should be done only after all messages are processed
-                # and each user has received a reaction
-                # For now, we'll just log that this would happen
+                # Отправляем запрос на обновление профилей
+                await send_profile_request(user_id, action='search')
                 logger.info(
-                    'Profile update would be triggered for user %s after all messages are processed',
+                    'Profile update request sent for user %s after like',
                     user_id
                 )
             else:
@@ -101,12 +100,10 @@ async def handle_dislike(body: dict) -> None:
                     target_user_id
                 )
                 
-                # Check if we need to update profiles in Redis
-                # This should be done only after all messages are processed
-                # and each user has received a reaction
-                # For now, we'll just log that this would happen
+                # Отправляем запрос на обновление профилей
+                await send_profile_request(user_id, action='search')
                 logger.info(
-                    'Profile update would be triggered for user %s after all messages are processed',
+                    'Profile update request sent for user %s after dislike',
                     user_id
                 )
             else:
