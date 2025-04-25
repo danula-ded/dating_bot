@@ -19,6 +19,8 @@ from consumer.services.profile_service import load_and_store_matching_profiles
 from consumer.storage.db import async_session
 
 
+
+
 # Track processed messages per user
 processed_messages = defaultdict(int)
 # Batch size for triggering profile updates
