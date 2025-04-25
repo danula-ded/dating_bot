@@ -84,9 +84,7 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
             exchange = await channel.declare_exchange('user_files', ExchangeType.TOPIC, durable=True)
 
             registration_message = RegistrationMessage(
-                user=user,
-                profile=profile,
-                correlation_id=context.get(HeaderKeys.correlation_id)
+                user=user, profile=profile, correlation_id=context.get(HeaderKeys.correlation_id)
             )
 
             await exchange.publish(
@@ -105,4 +103,4 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
         await message.reply('Спасибо за регистрацию!')
     else:
         # If not in registration state, inform user
-        await message.reply('Пожалуйста, используйте команды для взаимодействия с ботом.') 
+        await message.reply('Пожалуйста, используйте команды для взаимодействия с ботом.')

@@ -140,9 +140,7 @@ async def handle_file_upload(message: types.Message, state: FSMContext) -> None:
                         aio_pika.Message(
                             body=msgpack.packb(
                                 RegistrationMessage(
-                                    user=user,
-                                    profile=profile,
-                                    correlation_id=context.get(HeaderKeys.correlation_id)
+                                    user=user, profile=profile, correlation_id=context.get(HeaderKeys.correlation_id)
                                 ).model_dump()
                             ),
                             content_type='application/x-msgpack',

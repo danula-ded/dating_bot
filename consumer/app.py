@@ -47,7 +47,9 @@ async def start_consumer() -> None:
                                 logger.warning('Unknown file action: %s', body.action)
                         except Exception:
                             # Если не получилось, пробуем как RegistrationMessage
-                            body: RegistrationMessage = RegistrationMessage.model_validate(msgpack.unpackb(message.body))
+                            body: RegistrationMessage = RegistrationMessage.model_validate(
+                                msgpack.unpackb(message.body)
+                            )
                             logger.info('Registration message received: %s', body)
                             if body.action == 'user_registration':
                                 await handle_registration(body)
