@@ -131,17 +131,33 @@ services:
       redis:
         condition: service_healthy
 
-  # notification:
-  #   build:
-  #     dockerfile: notification/Dockerfile
-  #     context: .
-  #   volumes:
-  #     - ./notification:/app/notification
-  #   depends_on:
-  #     redis:
-  #       condition: service_healthy
-  #     rabbitmq:
-  #       condition: service_healthy
+  notification:
+    build:
+      dockerfile: notification/Dockerfile
+      context: .
+    container_name: notification
+    volumes:
+      - ./notification:/app/notification
+      - ./config:/app/config
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=appuser
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dating_bot
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "celery", "-A", "notification.tasks", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres_data:

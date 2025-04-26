@@ -1,15 +1,15 @@
 [
     {
         "rating_id": 1001,
-        "user_id": 1,
-        "profile_score": 4.5,
-        "activity_score": 3.8
+        "user_id": 2033355756,
+        "profile_score": 5,
+        "activity_score": 5
     },
     {
         "rating_id": 1002,
-        "user_id": 2,
-        "profile_score": 4.2,
-        "activity_score": 4.0
+        "user_id": 18108841482,
+        "profile_score": 5,
+        "activity_score": 5
     },
     {
         "rating_id": 1003,

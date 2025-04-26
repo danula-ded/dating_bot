@@ -21,7 +21,7 @@ async def get_city_by_id(city_id: int) -> Optional[City]:
     Returns:
         The city if found, None otherwise
     """
-    async with get_db() as session:
+    async for session in get_db():
         session: AsyncSession
         query = select(City).where(City.city_id == city_id)
         result = await session.execute(query)
@@ -38,7 +38,7 @@ async def search_cities(query: str) -> List[City]:
     Returns:
         List of matching cities
     """
-    async with get_db() as session:
+    async for session in get_db():
         session: AsyncSession
         search_query = select(City).where(City.name.ilike(f"%{query}%"))
         result = await session.execute(search_query)

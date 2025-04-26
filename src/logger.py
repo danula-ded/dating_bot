@@ -18,5 +18,4 @@ class ConsoleFormatter(logging.Formatter):
 
         return super().format(record)
 
-
 logger = logging.getLogger('backend_logger')

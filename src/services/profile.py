@@ -21,7 +21,7 @@ async def get_profile_by_user_id(user_id: int) -> Optional[Profile]:
     Returns:
         The profile if found, None otherwise
     """
-    async with get_db() as session:
+    async for session in get_db():
         session: AsyncSession
         query = select(Profile).where(Profile.user_id == user_id)
         result = await session.execute(query)

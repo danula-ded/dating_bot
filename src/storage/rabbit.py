@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, AsyncContextManager
 
 import aio_pika
 from aio_pika import Channel
@@ -15,9 +15,10 @@ async def get_connection() -> AbstractRobustConnection:
 connection_pool: Pool[AbstractRobustConnection] = Pool(get_connection, max_size=2)
 
 
-async def get_channel() -> Channel:
+async def get_channel() -> AsyncContextManager[Channel]:
     async with connection_pool.acquire() as connection:
-        return cast(Channel, await connection.channel())
+        channel = cast(Channel, await connection.channel())
+        return channel
 
 
 channel_pool: Pool[Channel] = Pool(get_channel, max_size=10)

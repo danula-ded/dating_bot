@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 
 from consumer.model.meta import Base
-from consumer.model.user import User
 
 __all__ = ['Like', 'Dislike']
 
