@@ -1,42 +1,82 @@
 name: Lint
- 
- on:
-   push:
-     branches: [*]
-   pull_request:
-     branches: [*]
- 
- permissions:
-   checks: write
-   contents: write
- 
- jobs:
-   run-linters:
-     name: Run linters
-     runs-on: ubuntu-latest
- 
-     steps:
-       - name: Checkout code
-         uses: actions/checkout@v4
- 
-       ### PYTHON ###
-       - name: Set up Python
-         uses: actions/setup-python@v4
-         with:
-           python-version: 3.11
- 
-       - name: Install Python dependencies
-         run: |
-           python -m pip install --upgrade pip
-           pip install black flake8 mypy
- 
- 
-       ### LINT RUNNER ###
-       - name: Run linters
-         uses: wearerequired/lint-action@v2
-         with:
-           # Python
-           black: true
-           # Автофиксы
-           auto_fix: true
-           black_auto_fix: true
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+permissions:
+  checks: write
+  contents: write
+
+jobs:
+  run-linters:
+    name: Run linters on changed files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Для получения истории коммитов
+
+      - name: Get changed Python files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            **/*.py
+            **/*.pyi
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8 mypy pylint isort
+
+      - name: Run black on changed files
+        run: |
+          if [ -n "${{ steps.changed-files.outputs.all_changed_files }}" ]; then
+            black ${{ steps.changed-files.outputs.all_changed_files }}
+          else
+            echo "No Python files changed."
+          fi
+
+      - name: Run isort on changed files
+        run: |
+          if [ -n "${{ steps.changed-files.outputs.all_changed_files }}" ]; then
+            isort ${{ steps.changed-files.outputs.all_changed_files }}
+          else
+            echo "No Python files changed."
+          fi
+
+      - name: Run flake8 on changed files
+        run: |
+          if [ -n "${{ steps.changed-files.outputs.all_changed_files }}" ]; then
+            flake8 ${{ steps.changed-files.outputs.all_changed_files }}
+          else
+            echo "No Python files changed."
+          fi
+
+      - name: Run mypy on changed files
+        run: |
+          if [ -n "${{ steps.changed-files.outputs.all_changed_files }}" ]; then
+            mypy ${{ steps.changed-files.outputs.all_changed_files }}
+          else
+            echo "No Python files changed."
+          fi
+
+      - name: Run pylint on changed files
+        run: |
+          if [ -n "${{ steps.changed-files.outputs.all_changed_files }}" ]; then
+            pylint ${{ steps.changed-files.outputs.all_changed_files }}
+          else
+            echo "No Python files changed."
+          fi
