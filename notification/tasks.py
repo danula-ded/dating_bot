@@ -12,13 +12,14 @@ from notification.bot import bot
 from notification.storage.db import async_session
 from notification.storage.models import User
 from notification.celery_app import celery_app
+from config.settings import settings
 
 # Initialize Minio client
 minio_client = Minio(
-    'minio:9000',
-    access_key='minioadmin',
-    secret_key='minioadmin',
-    secure=False
+    settings.MINIO_URL.replace('http://', '').replace('https://', ''),
+    access_key=settings.MINIO_ACCESS_KEY,
+    secret_key=settings.MINIO_SECRET_KEY,
+    secure=settings.MINIO_URL.startswith('https')
 )
 
 # Log startup message
@@ -92,10 +93,11 @@ async def get_photo_url(user_id: int) -> str:
     """Get presigned URL for user's photo from Minio."""
     try:
         photo_url = minio_client.presigned_get_object(
-            'photos',
+            settings.MINIO_BUCKET_NAME,
             f'{user_id}.jpg',
             expires=timedelta(hours=1)
         )
+        logger.info('Generated presigned URL for user %s: %s', user_id, photo_url)
         return photo_url
     except Exception as e:
         logger.error('Error getting photo URL for user %s: %s', user_id, str(e))
@@ -176,9 +178,9 @@ def check_likes(self) -> None:
             logger.error('Error in check_likes task: %s', str(e))
             raise
         finally:
-            await redis.close()
+            await redis.close() 
     
     # Run the async function in an event loop
     loop = asyncio.get_event_loop()
     loop.run_until_complete(_check_likes())
-    logger.info('Completed check_likes task') 
+    logger.info('Completed check_likes task')

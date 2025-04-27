@@ -63,6 +63,7 @@ async def handle_search_command(message: Message, state: FSMContext) -> None:
         # Check if user is registered
         user = await get_user_by_id(user_id)
         if not user:
+            logger.info('User %s is not registered', user_id)
             await message.answer(
                 'Для поиска анкет необходимо сначала зарегистрироваться. '
                 'Используйте команду /start для регистрации.'
@@ -71,6 +72,8 @@ async def handle_search_command(message: Message, state: FSMContext) -> None:
 
         # Check if there are profiles in Redis
         has_profiles = await check_profiles_in_redis(user_id)
+        logger.info('User %s has profiles in Redis: %s', user_id, has_profiles)
+        
         if not has_profiles:
             # No profiles in Redis, request more from the queue
             logger.info('No profiles in Redis for user %s, requesting more', user_id)
@@ -99,12 +102,12 @@ async def handle_search_command(message: Message, state: FSMContext) -> None:
             await message.answer('Произошла ошибка при загрузке профиля. Пожалуйста, попробуйте позже.')
             return
         
-        # Check remaining profiles count
-        remaining_count = await get_remaining_profiles_count(user_id)
-        if remaining_count <= 1:
-            # Request new profiles when only one profile is left
-            await send_profile_request(user_id, action='search')
-            logger.info('Requesting new profiles for user %s as only %s profile(s) remain', user_id, remaining_count)
+        # # Check remaining profiles count
+        # remaining_count = await get_remaining_profiles_count(user_id)
+        # if remaining_count <= 1:
+        #     # Request new profiles when only one profile is left
+        #     await send_profile_request(user_id, action='search')
+        #     logger.info('Requesting new profiles for user %s as only %s profile(s) remain', user_id, remaining_count)
         
         # Create keyboard with like/dislike buttons
         keyboard = InlineKeyboardBuilder()
@@ -168,12 +171,12 @@ async def handle_like(callback: CallbackQuery, state: FSMContext) -> None:
             await send_profile_request(user_id, action='search')
             logger.info('Profile update request sent for user %s after empty profiles', user_id)
         else:
-            # Check remaining profiles count
-            remaining_count = await get_remaining_profiles_count(user_id)
-            if remaining_count <= 1:
-                # Request new profiles when only one profile is left
-                await send_profile_request(user_id, action='search')
-                logger.info('Requesting new profiles for user %s as only %s profile(s) remain', user_id, remaining_count)
+            # # Check remaining profiles count
+            # remaining_count = await get_remaining_profiles_count(user_id)
+            # if remaining_count <= 1:
+            #     # Request new profiles when only one profile is left
+            #     await send_profile_request(user_id, action='search')
+            #     logger.info('Requesting new profiles for user %s as only %s profile(s) remain', user_id, remaining_count)
             
             # Create keyboard for next profile
             keyboard = InlineKeyboardBuilder()
@@ -255,12 +258,12 @@ async def handle_dislike(callback: CallbackQuery, state: FSMContext) -> None:
             await send_profile_request(user_id, action='search')
             logger.info('Profile update request sent for user %s after empty profiles', user_id)
         else:
-            # Check remaining profiles count
-            remaining_count = await get_remaining_profiles_count(user_id)
-            if remaining_count <= 1:
-                # Request new profiles when only one profile is left
-                await send_profile_request(user_id, action='search')
-                logger.info('Requesting new profiles for user %s as only %s profile(s) remain', user_id, remaining_count)
+            # # Check remaining profiles count
+            # remaining_count = await get_remaining_profiles_count(user_id)
+            # if remaining_count <= 1:
+            #     # Request new profiles when only one profile is left
+            #     await send_profile_request(user_id, action='search')
+            #     logger.info('Requesting new profiles for user %s as only %s profile(s) remain', user_id, remaining_count)
             
             # Create keyboard for next profile
             keyboard = InlineKeyboardBuilder()

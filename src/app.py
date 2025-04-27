@@ -16,6 +16,7 @@ from src.api.tg.router import router as tg_router
 from src.bg_tasks import background_tasks
 from src.bot import bot, dp
 from src.logger import LOGGING_CONFIG, logger
+from src.routes.photo import router as photo_router
 from src.storage.minio_client import create_bucket
 from src.storage.rabbit import channel_pool
 
@@ -69,6 +70,7 @@ def create_app() -> FastAPI:
     app.include_router(router, prefix='', tags=['Metrics && Health'])
     app.include_router(tg_router, prefix='/tg', tags=['Telegram Webhook'])
     app.include_router(minio_router, prefix='/tg/webhook', tags=['MinIO API'])
+    app.include_router(photo_router, prefix='/photo', tags=['Photo API'])
 
     app.add_middleware(RawContextMiddleware, plugins=[plugins.CorrelationIdPlugin()])
     return app

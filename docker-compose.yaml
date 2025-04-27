@@ -147,10 +147,16 @@ services:
       - POSTGRES_USER=appuser
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=dating_bot
+      - MINIO_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET_NAME=photos
     depends_on:
       redis:
         condition: service_healthy
       postgres:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
