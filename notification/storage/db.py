@@ -4,7 +4,7 @@ from uuid import uuid4
 from asyncpg import Connection
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from typing_extensions import AsyncGenerator
 
 from config.settings import settings
@@ -29,6 +29,8 @@ def create_engine() -> AsyncEngine:
             'statement_cache_size': 0,
             'prepared_statement_cache_size': 0,
         },
+        echo=True,
+        future=True
     )
 
 

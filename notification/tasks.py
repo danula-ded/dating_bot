@@ -1,16 +1,18 @@
 """Celery tasks for notification service."""
 from typing import Dict, List, Any
 import asyncio
-from datetime import timedelta
+import aiohttp
+import tempfile
+import os
 
 from redis import asyncio as aioredis
-from sqlalchemy import select
+from sqlalchemy import select, join
 from notification.logger import logger
 from minio import Minio
 
 from notification.bot import bot
 from notification.storage.db import async_session
-from notification.storage.models import User
+from notification.storage.models import User, Profile, City
 from notification.celery_app import celery_app
 from config.settings import settings
 
@@ -46,7 +48,7 @@ async def get_likes_for_user(user_id: int) -> List[int]:
     key = f'user:{user_id}:likes'
     
     try:
-        likes = await redis.smembers(key)
+        likes: set[str] = await redis.smembers(key)  # type: ignore
         logger.info('Found %d likes for user %s', len(likes), user_id)
         return [int(like) for like in likes]
     except Exception as e:
@@ -56,22 +58,43 @@ async def get_likes_for_user(user_id: int) -> List[int]:
         await redis.close()
 
 
+async def download_from_presigned_url(url: str) -> str | None:
+    """Download file from presigned URL and return local path."""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                if resp.status == 200:
+                    content = await resp.read()
+                    # Create a temporary file
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as f:
+                        f.write(content)
+                        return f.name
+    except Exception as e:
+        logger.error('Error downloading file from URL: %s', e)
+        return None
+
+
 async def get_user_info(user_id: int) -> Dict[str, Any]:
     """Get user information from PostgreSQL by user_id."""
     async with async_session() as session:
         try:
-            result = await session.execute(
-                select(
-                    User.username,
-                    User.first_name,
-                    User.gender,
-                    User.age,
-                    User.bio,
-                    User.city,
-                    User.photo_url
-                ).where(User.id == user_id)
-            )
+            # Join users with profile and city tables to get all user info
+            query = select(
+                User.username,
+                User.first_name,
+                User.gender,
+                User.age,
+                Profile.bio,
+                City.name.label('city'),
+                Profile.photo_url
+            ).select_from(
+                join(User, Profile, User.user_id == Profile.user_id)
+                .join(City, User.city_id == City.city_id)
+            ).where(User.user_id == user_id)
+
+            result = await session.execute(query)
             user = result.first()
+            
             if user:
                 return {
                     'username': user.username,
@@ -87,21 +110,6 @@ async def get_user_info(user_id: int) -> Dict[str, Any]:
         except Exception as e:
             logger.error('Error getting user info for user %s: %s', user_id, str(e))
             return {}
-
-
-async def get_photo_url(user_id: int) -> str:
-    """Get presigned URL for user's photo from Minio."""
-    try:
-        photo_url = minio_client.presigned_get_object(
-            settings.MINIO_BUCKET_NAME,
-            f'{user_id}.jpg',
-            expires=timedelta(hours=1)
-        )
-        logger.info('Generated presigned URL for user %s: %s', user_id, photo_url)
-        return photo_url
-    except Exception as e:
-        logger.error('Error getting photo URL for user %s: %s', user_id, str(e))
-        return ''
 
 
 async def send_notification(user_id: int, likes: List[int]) -> None:
@@ -121,8 +129,6 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                 logger.warning('User info not found for like from user %s', from_user_id)
                 continue
                 
-            photo_url = await get_photo_url(from_user_id)
-            
             message = (
                 f'👤 Профиль пользователя:\n\n'
                 f'Имя: {user_info["first_name"]}\n'
@@ -133,12 +139,35 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                 f'Username: @{user_info["username"]}\n\n'
             )
             
-            if photo_url:
-                await bot.send_photo(
-                    chat_id=user_id,
-                    photo=photo_url,
-                    caption=message
-                )
+            if user_info.get('photo_url'):
+                try:
+                    # Download the photo from the presigned URL
+                    local_path = await download_from_presigned_url(user_info['photo_url'])
+                    if local_path:
+                        # Send photo with caption
+                        await bot.send_photo(
+                            chat_id=user_id,
+                            photo=local_path,
+                            caption=message
+                        )
+                        
+                        # Clean up the temporary file
+                        try:
+                            os.unlink(local_path)
+                        except Exception as e:
+                            logger.error('Error deleting temporary file: %s', e)
+                    else:
+                        logger.error('Failed to download photo for user %s', from_user_id)
+                        await bot.send_message(
+                            chat_id=user_id,
+                            text=message
+                        )
+                except Exception as e:
+                    logger.error('Error sending photo for user %s: %s', from_user_id, str(e))
+                    await bot.send_message(
+                        chat_id=user_id,
+                        text=message
+                    )
             else:
                 await bot.send_message(
                     chat_id=user_id,
@@ -146,7 +175,7 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                 )
             
             logger.info('Notification sent to user %s about like from %s', user_id, from_user_id)
-            await redis.srem(key, from_user_id)
+            await redis.srem(key, str(from_user_id))  # type: ignore
             logger.info('Removed processed like from user %s', from_user_id)
         
     except Exception as e:
@@ -155,7 +184,7 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
         await redis.close()
 
 
-@celery_app.task(name='check_likes', bind=True)
+@celery_app.task(name='notification.tasks.check_likes', bind=True)
 def check_likes(self) -> None:
     """Check for new likes and send notifications."""
     logger.info('Starting check_likes task')

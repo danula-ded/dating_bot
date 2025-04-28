@@ -108,25 +108,30 @@ async def display_profile(message: Message, user: UserInDB, profile: ProfileInDB
 
 
 @router.callback_query(F.data == 'edit_profile')
-async def handle_edit_profile(callback: CallbackQuery, state: FSMContext):
+async def handle_edit_profile(callback: CallbackQuery, state: FSMContext) -> None:
     """Handle the edit profile button click."""
     keyboard = InlineKeyboardBuilder()
-    keyboard.button(text='📝 Name', callback_data='edit_name')
-    keyboard.button(text='🎂 Age', callback_data='edit_age')
-    keyboard.button(text='👫 Gender', callback_data='edit_gender')
-    keyboard.button(text='📍 City', callback_data='edit_city')
-    keyboard.button(text='📖 Bio', callback_data='edit_bio')
-    keyboard.button(text='📸 Photo', callback_data='edit_photo')
-    keyboard.button(text='💝 Preferences', callback_data='edit_preferences')
-    keyboard.button(text='🔙 Back', callback_data='back_to_profile')
+    keyboard.button(text='Имя', callback_data='edit_name')
+    keyboard.button(text='Возраст', callback_data='edit_age')
+    keyboard.button(text='Город', callback_data='edit_city')
+    keyboard.button(text='О себе', callback_data='edit_bio')
+    keyboard.button(text='Фото', callback_data='edit_photo')
+    keyboard.button(text='Пол', callback_data='edit_gender')
+    keyboard.button(text='Предпочитаемый пол', callback_data='edit_preferred_gender')
     keyboard.adjust(2)
 
-    await callback.message.edit_text('What would you like to edit?', reply_markup=keyboard.as_markup())
+    # Check if the message has text content
+    if callback.message and callback.message.text:
+        await callback.message.edit_text('Что вы хотите изменить в профиле?', reply_markup=keyboard.as_markup())
+    else:
+        # If the message doesn't have text (e.g., it's a photo), send a new message
+        await callback.message.answer('Что вы хотите изменить в профиле?', reply_markup=keyboard.as_markup())
+    
     await state.set_state(ProfileGroup.editing)
 
 
 @router.callback_query(F.data == 'back_to_profile')
-async def handle_back_to_profile(callback: CallbackQuery, state: FSMContext):
+async def handle_back_to_profile(callback: CallbackQuery, state: FSMContext) -> None:
     """Handle the back button click to return to profile view."""
     user = await get_user_by_id(callback.from_user.id)
     profile = await get_profile_by_user_id(callback.from_user.id)
@@ -140,7 +145,7 @@ async def handle_back_to_profile(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == 'refresh_profile')
-async def handle_refresh_profile(callback: CallbackQuery, state: FSMContext):
+async def handle_refresh_profile(callback: CallbackQuery, state: FSMContext) -> None:
     """Handle the refresh button click to update profile view."""
     user = await get_user_by_id(callback.from_user.id)
     profile = await get_profile_by_user_id(callback.from_user.id)
@@ -156,7 +161,8 @@ async def handle_refresh_profile(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == 'edit_name')
 async def handle_edit_name(callback: CallbackQuery, state: FSMContext) -> None:
     """Handle the edit name button click."""
-    await callback.message.edit_text('Please enter your new name:')
+    if callback.message:
+        await callback.message.edit_text('Please enter your new name:')
     await state.set_state(ProfileGroup.editing_name)
 
 
@@ -168,16 +174,17 @@ async def handle_name_input(message: Message, state: FSMContext) -> None:
         await message.answer('Please complete your registration first using /start')
         return
 
-    await update_user(user.id, first_name=message.text)
+    await update_user(user.user_id, first_name=message.text)
     await message.answer('Name updated successfully!')
     await state.set_state(ProfileGroup.viewing)
-    await display_profile(message, user, await get_profile_by_user_id(user.id))
+    await display_profile(message, user, await get_profile_by_user_id(user.user_id))
 
 
 @router.callback_query(F.data == 'edit_age')
 async def handle_edit_age(callback: CallbackQuery, state: FSMContext) -> None:
     """Handle the edit age button click."""
-    await callback.message.edit_text('Please enter your new age:')
+    if callback.message:
+        await callback.message.edit_text('Please enter your new age:')
     await state.set_state(ProfileGroup.editing_age)
 
 
@@ -198,7 +205,7 @@ async def handle_age_input(message: Message, state: FSMContext) -> None:
         await message.answer('Please complete your registration first using /start')
         return
 
-    await update_user(user.id, age=age)
+    await update_user(user.user_id, age=age)
     await message.answer('Age updated successfully!')
     await state.set_state(ProfileGroup.viewing)
-    await display_profile(message, user, await get_profile_by_user_id(user.id))
+    await display_profile(message, user, await get_profile_by_user_id(user.user_id))
