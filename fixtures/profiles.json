@@ -1,47 +1,272 @@
 [
-    {
-        "profile_id": 1,
-        "user_id": 1,
-        "bio": "Люблю путешествия и фотографию",
-        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
-        "preferred_gender": "male",
-        "preferred_age_min": 25,
-        "preferred_age_max": 35
-    },
-    {
-        "profile_id": 2,
-        "user_id": 2,
-        "bio": "Увлекаюсь спортом и технологиями",
-        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
-        "preferred_gender": "female",
-        "preferred_age_min": 23,
-        "preferred_age_max": 30
-    },
-    {
-        "profile_id": 3,
-        "user_id": 3,
-        "bio": "Люблю искусство и чтение",
-        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
-        "preferred_gender": "male",
-        "preferred_age_min": 28,
-        "preferred_age_max": 35
-    },
-    {
-        "profile_id": 4,
-        "user_id": 4,
-        "bio": "Увлекаюсь кулинарией и музыкой",
-        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
-        "preferred_gender": "female",
-        "preferred_age_min": 25,
-        "preferred_age_max": 32
-    },
-    {
-        "profile_id": 5,
-        "user_id": 5,
-        "bio": "Люблю природу и кино",
-        "photo_url": "https://distribution.faceit-cdn.net/images/75d3ecac-5c59-4324-b398-09b8beb7ec4d.jpeg",
-        "preferred_gender": "male",
-        "preferred_age_min": 27,
-        "preferred_age_max": 33
-    }
-] 
+  {
+    "profile_id": 1000,
+    "user_id": 2033355756,
+    "bio": "Люблю фотографировать закаты и путешествовать по новым местам",
+    "photo_url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
+    "preferred_gender": "female",
+    "preferred_age_min": 18,
+    "preferred_age_max": 20
+  },
+  {
+    "profile_id": 1001,
+    "user_id": 2,
+    "bio": "Программист, занимаюсь спортом, увлекаюсь новыми технологиями",
+    "photo_url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+    "preferred_gender": "female",
+    "preferred_age_min": 18,
+    "preferred_age_max": 20
+  },
+  {
+    "profile_id": 1002,
+    "user_id": 3,
+    "bio": "Художник, люблю современное искусство и классическую литературу",
+    "photo_url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+    "preferred_gender": "male",
+    "preferred_age_min": 28,
+    "preferred_age_max": 35
+  },
+  {
+    "profile_id": 1003,
+    "user_id": 4,
+    "bio": "Шеф-повар, обожаю экспериментировать с новыми рецептами",
+    "photo_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    "preferred_gender": "female",
+    "preferred_age_min": 25,
+    "preferred_age_max": 32
+  },
+  {
+    "profile_id": 1004,
+    "user_id": 5,
+    "bio": "Эколог, забочусь о природе, люблю документальное кино",
+    "photo_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    "preferred_gender": "male",
+    "preferred_age_min": 27,
+    "preferred_age_max": 33
+  },
+  {
+    "profile_id": 1005,
+    "user_id": 6,
+    "bio": "Data Scientist, увлекаюсь машинным обучением и квантовой физикой",
+    "photo_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    "preferred_gender": "female",
+    "preferred_age_min": 25,
+    "preferred_age_max": 32
+  },
+  {
+    "profile_id": 1006,
+    "user_id": 7,
+    "bio": "Актриса театра, рисую портреты в свободное время",
+    "photo_url": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce",
+    "preferred_gender": "male",
+    "preferred_age_min": 28,
+    "preferred_age_max": 35
+  },
+  {
+    "profile_id": 1007,
+    "user_id": 8,
+    "bio": "Историк, изучаю древние цивилизации и восточную философию",
+    "photo_url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6",
+    "preferred_gender": "female",
+    "preferred_age_min": 26,
+    "preferred_age_max": 33
+  },
+  {
+    "profile_id": 1008,
+    "user_id": 9,
+    "bio": "Тренер по кроссфиту, обожаю экстремальные виды спорта",
+    "photo_url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
+    "preferred_gender": "male",
+    "preferred_age_min": 24,
+    "preferred_age_max": 30
+  },
+  {
+    "profile_id": 1009,
+    "user_id": 10,
+    "bio": "Психолог, помогаю людям найти себя и свой путь",
+    "photo_url": "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43",
+    "preferred_gender": "female",
+    "preferred_age_min": 27,
+    "preferred_age_max": 34
+  },
+  {
+    "profile_id": 1010,
+    "user_id": 11,
+    "bio": "DJ, создаю электронную музыку и преподаю современные танцы",
+    "photo_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+    "preferred_gender": "male",
+    "preferred_age_min": 26,
+    "preferred_age_max": 32
+  },
+  {
+    "profile_id": 1011,
+    "user_id": 12,
+    "bio": "Фотограф-фрилансер, специализируюсь на портретной съемке",
+    "photo_url": "https://images.unsplash.com/photo-1519345182560-3f2917c472ef",
+    "preferred_gender": "female",
+    "preferred_age_min": 25,
+    "preferred_age_max": 31
+  },
+  {
+    "profile_id": 1012,
+    "user_id": 13,
+    "bio": "Писатель, автор нескольких сборников стихов",
+    "photo_url": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61",
+    "preferred_gender": "male",
+    "preferred_age_min": 24,
+    "preferred_age_max": 30
+  },
+  {
+    "profile_id": 1013,
+    "user_id": 14,
+    "bio": "Инженер-робототехник, создаю умные системы",
+    "photo_url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+    "preferred_gender": "female",
+    "preferred_age_min": 26,
+    "preferred_age_max": 33
+  },
+  {
+    "profile_id": 1014,
+    "user_id": 15,
+    "bio": "Фитнес-тренер, веду здоровый образ жизни",
+    "photo_url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+    "preferred_gender": "male",
+    "preferred_age_min": 25,
+    "preferred_age_max": 31
+  },
+  {
+    "profile_id": 1015,
+    "user_id": 16,
+    "bio": "Куратор художественной галереи, коллекционирую современное искусство",
+    "photo_url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+    "preferred_gender": "female",
+    "preferred_age_min": 27,
+    "preferred_age_max": 34
+  },
+  {
+    "profile_id": 1016,
+    "user_id": 17,
+    "bio": "Гид-экстремал, организую походы в горы",
+    "photo_url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
+    "preferred_gender": "male",
+    "preferred_age_min": 28,
+    "preferred_age_max": 35
+  },
+  {
+    "profile_id": 1017,
+    "user_id": 18,
+    "bio": "Сомелье, увлекаюсь гастрономией и виноделием",
+    "photo_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    "preferred_gender": "female",
+    "preferred_age_min": 25,
+    "preferred_age_max": 32
+  },
+  {
+    "profile_id": 1018,
+    "user_id": 19,
+    "bio": "Оперная певица, играю на фортепиано",
+    "photo_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
+    "preferred_gender": "male",
+    "preferred_age_min": 26,
+    "preferred_age_max": 33
+  },
+  {
+    "profile_id": 1019,
+    "user_id": 20,
+    "bio": "Персональный тренер, специализируюсь на функциональном тренинге",
+    "photo_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    "preferred_gender": "female",
+    "preferred_age_min": 24,
+    "preferred_age_max": 30
+  },
+  {
+    "profile_id": 1020,
+    "user_id": 21,
+    "bio": "Кинокритик, пишу рецензии на авторское кино",
+    "photo_url": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce",
+    "preferred_gender": "male",
+    "preferred_age_min": 25,
+    "preferred_age_max": 31
+  },
+  {
+    "profile_id": 1021,
+    "user_id": 22,
+    "bio": "UX/UI дизайнер, создаю удобные интерфейсы",
+    "photo_url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6",
+    "preferred_gender": "female",
+    "preferred_age_min": 27,
+    "preferred_age_max": 34
+  },
+  {
+    "profile_id": 1022,
+    "user_id": 23,
+    "bio": "Астрофизик, изучаю черные дыры",
+    "photo_url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
+    "preferred_gender": "male",
+    "preferred_age_min": 26,
+    "preferred_age_max": 32
+  },
+  {
+    "profile_id": 1023,
+    "user_id": 24,
+    "bio": "Искусствовед, специализируюсь на эпохе Возрождения",
+    "photo_url": "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43",
+    "preferred_gender": "female",
+    "preferred_age_min": 25,
+    "preferred_age_max": 31
+  },
+  {
+    "profile_id": 1024,
+    "user_id": 25,
+    "bio": "Инструктор по йоге и медитации",
+    "photo_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+    "preferred_gender": "male",
+    "preferred_age_min": 24,
+    "preferred_age_max": 30
+  },
+  {
+    "profile_id": 1025,
+    "user_id": 26,
+    "bio": "Коуч по личностному росту, провожу тренинги",
+    "photo_url": "https://images.unsplash.com/photo-1519345182560-3f2917c472ef",
+    "preferred_gender": "female",
+    "preferred_age_min": 26,
+    "preferred_age_max": 33
+  },
+  {
+    "profile_id": 1026,
+    "user_id": 27,
+    "bio": "Хореограф современных танцев, ставлю шоу",
+    "photo_url": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61",
+    "preferred_gender": "male",
+    "preferred_age_min": 25,
+    "preferred_age_max": 31
+  },
+  {
+    "profile_id": 1027,
+    "user_id": 28,
+    "bio": "Графический дизайнер, создаю брендинг для компаний",
+    "photo_url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+    "preferred_gender": "female",
+    "preferred_age_min": 27,
+    "preferred_age_max": 34
+  },
+  {
+    "profile_id": 1028,
+    "user_id": 29,
+    "bio": "Переводчик художественной литературы, пишу стихи",
+    "photo_url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+    "preferred_gender": "male",
+    "preferred_age_min": 26,
+    "preferred_age_max": 32
+  },
+  {
+    "profile_id": 1029,
+    "user_id": 30,
+    "bio": "Разработчик искусственного интеллекта, увлекаюсь нейросетями",
+    "photo_url": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+    "preferred_gender": "female",
+    "preferred_age_min": 25,
+    "preferred_age_max": 31
+  }
+]

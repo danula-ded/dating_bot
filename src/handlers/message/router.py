@@ -39,7 +39,7 @@ async def handle_text_message(message: types.Message, state: FSMContext) -> None
             return
         await state.update_data(age=age)
         await state.set_state(AuthGroup.registration_gender)
-        await message.reply('Выберите ваш пол:\n1. Мужской\n2. Женский\n3. Другой\nВведите номер варианта:')
+        await message.reply('Выберите ваш пол:\n1. Мужской\n2. Женский\nВведите номер варианта:')
 
     elif current_state == AuthGroup.registration_gender.state:
         gender_map = {'1': 'male', '2': 'female', '3': 'other'}
@@ -51,12 +51,51 @@ async def handle_text_message(message: types.Message, state: FSMContext) -> None
         await message.reply('Введите название вашего города:')
 
     elif current_state == AuthGroup.registration_city.state:
-        await state.update_data(city=message.text)
+        await state.update_data(city_name=message.text)
         await state.set_state(AuthGroup.registration_bio)
         await message.reply('Расскажите немного о себе (краткое описание):')
 
     elif current_state == AuthGroup.registration_bio.state:
         await state.update_data(bio=message.text)
+        await state.set_state(AuthGroup.registration_preferred_gender)
+        await message.reply(
+            'Выберите предпочитаемый пол для знакомств:\n1. Мужской\n2. Женский\nВведите номер варианта:'
+        )
+
+    elif current_state == AuthGroup.registration_preferred_gender.state:
+        gender_map = {'1': 'male', '2': 'female', '3': 'other'}
+        if message.text not in gender_map:
+            await message.reply('Пожалуйста, выберите вариант 1, 2 или 3.')
+            return
+        await state.update_data(preferred_gender=gender_map[message.text])
+        await state.set_state(AuthGroup.registration_preferred_age_min)
+        await message.reply('Введите минимальный предпочитаемый возраст (только число):')
+
+    elif current_state == AuthGroup.registration_preferred_age_min.state:
+        if not message.text.isdigit():
+            await message.reply('Пожалуйста, введите возраст числом.')
+            return
+        age_min = int(message.text)
+        if age_min < 18:
+            await message.reply('Минимальный возраст должен быть не менее 18 лет.')
+            return
+        await state.update_data(preferred_age_min=age_min)
+        await state.set_state(AuthGroup.registration_preferred_age_max)
+        await message.reply('Введите максимальный предпочитаемый возраст (только число):')
+
+    elif current_state == AuthGroup.registration_preferred_age_max.state:
+        if not message.text.isdigit():
+            await message.reply('Пожалуйста, введите возраст числом.')
+            return
+        age_max = int(message.text)
+        user_data = await state.get_data()
+        age_min = user_data.get('preferred_age_min', 18)
+
+        if age_max < age_min:
+            await message.reply(f'Максимальный возраст должен быть не меньше минимального ({age_min}).')
+            return
+
+        await state.update_data(preferred_age_max=age_max)
         await state.set_state(AuthGroup.registration_photo)
         await message.reply('Отправьте свою фотографию для профиля:')
 

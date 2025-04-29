@@ -24,6 +24,9 @@ class AuthMiddleware(BaseMiddleware):
             or current_state == AuthGroup.registration_gender.state
             or current_state == AuthGroup.registration_city.state
             or current_state == AuthGroup.registration_bio.state
+            or current_state == AuthGroup.registration_preferred_gender.state
+            or current_state == AuthGroup.registration_preferred_age_min.state
+            or current_state == AuthGroup.registration_preferred_age_max.state
             or current_state == AuthGroup.registration_photo.state
         ):
             return await handler(event, data)

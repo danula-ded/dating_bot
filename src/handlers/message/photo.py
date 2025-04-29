@@ -60,15 +60,16 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
     if current_state == AuthGroup.registration_photo.state:
         # Get all collected data
         user_data = await state.get_data()
+        logger.info('Creating user with data: %s', user_data)
 
         # Create user and profile
         user = UserCreate(
             user_id=message.from_user.id,
-            telegram_id=message.from_user.id,
+            username=message.from_user.username or f'user_{message.from_user.id}',
             first_name=user_data['first_name'],
             age=user_data['age'],
             gender=user_data['gender'],
-            city=user_data['city'],
+            city_name=user_data['city_name'],
             bio=user_data['bio'],
             photo_url=photo_url,
         )
@@ -77,6 +78,9 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
             user_id=message.from_user.id,
             bio=user_data['bio'],
             photo_url=photo_url,
+            preferred_gender=user_data.get('preferred_gender'),
+            preferred_age_min=user_data.get('preferred_age_min'),
+            preferred_age_max=user_data.get('preferred_age_max'),
         )
 
         # Send data to RabbitMQ for processing
@@ -85,6 +89,14 @@ async def handle_photo(message: types.Message, state: FSMContext) -> None:
 
             registration_message = RegistrationMessage(
                 user=user, profile=profile, correlation_id=context.get(HeaderKeys.correlation_id)
+            )
+
+            logger.info(
+                '[%s] Registration message received: user=%s profile=%s action=%s',
+                context.get(HeaderKeys.correlation_id),
+                user,
+                profile,
+                'user_registration',
             )
 
             await exchange.publish(

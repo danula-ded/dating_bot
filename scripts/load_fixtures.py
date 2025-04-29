@@ -256,10 +256,6 @@ async def main() -> None:
         await load_cities(session, fixtures_dir / "cities.json")
         print("Города загружены")
 
-        # Загрузка интересов
-        await load_interests(session, fixtures_dir / "interests.json")
-        print("Интересы загружены")
-
         # Загрузка пользователей
         await load_users(session, fixtures_dir / "users.json")
         print("Пользователи загружены")
@@ -271,10 +267,6 @@ async def main() -> None:
         # Загрузка рейтингов
         await load_ratings(session, fixtures_dir / "ratings.json")
         print("Рейтинги загружены")
-
-        # Загрузка связей пользователей с интересами
-        await load_user_interests(session, fixtures_dir / "user_interests.json")
-        print("Связи пользователей с интересами загружены")
 
 
 if __name__ == "__main__":

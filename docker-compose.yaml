@@ -47,6 +47,17 @@ services:
       timeout: 5s
       retries: 5
 
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    restart: always
+
   rabbitmq:
     image: rabbitmq:3.13.7-management
     container_name: rabbitmq
@@ -63,7 +74,7 @@ services:
     image: prom/prometheus
     container_name: prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus_config.yml"
+      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -90,6 +101,8 @@ services:
       rabbitmq:
         condition: service_healthy
       minio:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   bot:
@@ -118,6 +131,63 @@ services:
       redis:
         condition: service_healthy
 
+  notification:
+    build:
+      dockerfile: notification/Dockerfile
+      context: .
+    container_name: notification
+    volumes:
+      - ./notification:/app/notification
+      - ./config:/app/config
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=appuser
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dating_bot
+      - MINIO_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET_NAME=photos
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "celery",
+          "-A",
+          "notification.tasks",
+          "inspect",
+          "ping",
+          "-d",
+          "celery@$$HOSTNAME",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Устанавливаем пароль администратора
+    ports:
+      - "3000:3000" # Порты для доступа к интерфейсу Grafana
+    volumes:
+      - grafana-storage:/var/lib/grafana # Для хранения данных Grafana
+    depends_on:
+      - prometheus # Добавляем зависимость от Prometheus, если используется
+
 volumes:
   postgres_data:
   minio_data:
+  grafana-storage: {}

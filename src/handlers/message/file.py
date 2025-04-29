@@ -117,15 +117,16 @@ async def handle_file_upload(message: types.Message, state: FSMContext) -> None:
                 # Обработка фото для регистрации
                 photo_url = get_file_path(unique_name)
                 user_data = await state.get_data()
+                logger.info('Creating user with data: %s', user_data)
 
                 try:
                     user = UserCreate(
                         user_id=user_id,
-                        telegram_id=message.from_user.id,
+                        username=message.from_user.username or f'user_{user_id}',
                         first_name=user_data['first_name'],
                         age=user_data['age'],
                         gender=user_data['gender'],
-                        city=user_data['city'],
+                        city_name=user_data.get('city_name', 'Не указан'),
                         bio=user_data['bio'],
                         photo_url=photo_url,
                     )
@@ -134,6 +135,17 @@ async def handle_file_upload(message: types.Message, state: FSMContext) -> None:
                         user_id=user_id,
                         bio=user_data['bio'],
                         photo_url=photo_url,
+                        preferred_gender=user_data.get('preferred_gender'),
+                        preferred_age_min=user_data.get('preferred_age_min'),
+                        preferred_age_max=user_data.get('preferred_age_max'),
+                    )
+
+                    logger.info(
+                        '[%s] Registration message received: user=%s profile=%s action=%s',
+                        context.get(HeaderKeys.correlation_id),
+                        user,
+                        profile,
+                        'user_registration',
                     )
 
                     await exchange.publish(

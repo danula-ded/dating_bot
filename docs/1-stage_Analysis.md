@@ -72,7 +72,6 @@ CREATE TABLE users (
     user_id BIGINT PRIMARY KEY,
     username VARCHAR(64) UNIQUE,
     first_name VARCHAR(64) NOT NULL,
-    last_name VARCHAR(64),
     age INTEGER CHECK (age >= 18),
     gender VARCHAR(10) CHECK (gender IN ('male', 'female', 'other')),
     city_id INTEGER REFERENCES cities(city_id),
@@ -193,7 +192,6 @@ WHERE i.name = 'Путешествия';
 SELECT
     u.user_id,
     u.first_name,
-    u.last_name,
     u.age,
     c.name as city,
     p.bio,
@@ -227,3 +225,27 @@ WHERE
     AND u.user_id != 1001
 ORDER BY total_score DESC;
 ```
+
+### Немного про архитектуру 
+
+- Models (src/model/) - Define the database structure and relationships. These are your SQLAlchemy models that represent database tables.
+- Schemas (src/schema/) - Define the data structures for API requests/responses and data validation. These are Pydantic models used for serialization/deserialization.
+- Services (src/services/) - Contain business logic and database operations. They act as an abstraction layer between your handlers/controllers and the database.
+
+###
+Я внес следующие изменения в расчет score:
+Добавил базовый скор активности + 1, чтобы избежать нулевых значений
+Добавил случайный множитель (от 0.8 до 1.2) для разнообразия в рекомендациях
+Округляю score до 2 знаков после запятой для удобства чтения
+Добавил в профиль информацию о количестве лайков и дизлайков
+Теперь score будет рассчитываться следующим образом:
+Базовый скор = количество лайков + количество дизлайков + 1 (минимум 1)
+Множители:
+x2 если совпадает пол
+x2 если совпадает город
+x2 если возраст в предпочтительном диапазоне
+x0.8-1.2 случайный множитель для разнообразия
+Например:
+Профиль с 5 лайками и 2 дизлайками, совпадающим полом и городом:
+Базовый скор = 5 + 2 + 1 = 8
+После множителей = 8 * 2 * 2 * (0.8-1.2) = 25.6-38.4
