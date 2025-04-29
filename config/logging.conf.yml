@@ -3,12 +3,12 @@ disable_existing_loggers: no
 formatters:
   console_formatter_consumer:
     (): consumer.logger.ConsoleFormatter
-    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   console_formatter_backend:
     (): src.logger.ConsoleFormatter
-    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   celery_formatter:
-    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 handlers:
   console_handler_backend:
     class: logging.StreamHandler
@@ -26,22 +26,22 @@ root:
   level: INFO
   handlers: [console_handler_backend]
 loggers:
-  'backend_logger':
+  "backend_logger":
     level: INFO
     propagate: no
     handlers: [console_handler_backend]
-  'consumer_logger':
+  "consumer_logger":
     level: INFO
     propagate: no
     handlers: [console_handler_consumer]
-  'celery':
+  "celery":
     level: INFO
     propagate: no
     handlers: [console_handler_celery]
-  'celery.task':
+  "celery.task":
     level: INFO
     propagate: no
     handlers: [console_handler_celery]
-  'uvicorn':
+  "uvicorn":
     level: INFO
     propagate: yes
