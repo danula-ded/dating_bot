@@ -11,17 +11,13 @@ MINIO_SECURE = os.getenv('MINIO_SECURE', 'false').lower() == 'true'
 MINIO_BUCKET = os.getenv('MINIO_BUCKET', 'dating-app')
 
 # Initialize MinIO client
-minio_client = Minio(
-    MINIO_ENDPOINT,
-    access_key=MINIO_ACCESS_KEY,
-    secret_key=MINIO_SECRET_KEY,
-    secure=MINIO_SECURE
-)
+minio_client = Minio(MINIO_ENDPOINT, access_key=MINIO_ACCESS_KEY, secret_key=MINIO_SECRET_KEY, secure=MINIO_SECURE)
+
 
 async def check_minio_connection() -> bool:
     """
     Check if MinIO connection is working by attempting to list buckets.
-    
+
     Returns:
         bool: True if connection is successful, False otherwise
     """
@@ -32,11 +28,12 @@ async def check_minio_connection() -> bool:
         print(f"MinIO connection error: {e}")
         return False
 
+
 def ensure_bucket_exists(bucket_name: str = MINIO_BUCKET) -> None:
     """
     Ensure that the specified bucket exists in MinIO.
     If it doesn't exist, create it.
-    
+
     Args:
         bucket_name (str): Name of the bucket to check/create
     """
@@ -48,5 +45,6 @@ def ensure_bucket_exists(bucket_name: str = MINIO_BUCKET) -> None:
         print(f"Error ensuring bucket exists: {e}")
         raise
 
+
 # Ensure the default bucket exists on startup
-ensure_bucket_exists() 
+ensure_bucket_exists()

@@ -1,4 +1,5 @@
 """Celery tasks for notification service."""
+
 from typing import Dict, List, Any
 import asyncio
 import aiohttp
@@ -21,20 +22,14 @@ minio_client = Minio(
     settings.MINIO_URL.replace('http://', '').replace('https://', ''),
     access_key=settings.MINIO_ACCESS_KEY,
     secret_key=settings.MINIO_SECRET_KEY,
-    secure=settings.MINIO_URL.startswith('https')
+    secure=settings.MINIO_URL.startswith('https'),
 )
 
 # Log startup message
 logger.info('Notification service started. Checking for likes every 2 minutes.')
 
 # Redis connection pool
-redis_pool = aioredis.ConnectionPool(
-    host='redis',
-    port=6379,
-    db=0,
-    decode_responses=True,
-    max_connections=10
-)
+redis_pool = aioredis.ConnectionPool(host='redis', port=6379, db=0, decode_responses=True, max_connections=10)
 
 
 async def get_redis() -> aioredis.Redis:
@@ -79,18 +74,21 @@ async def get_user_info(user_id: int) -> Dict[str, Any]:
     async with async_session() as session:
         try:
             # Join users with profile and city tables to get all user info
-            query = select(
-                User.username,
-                User.first_name,
-                User.gender,
-                User.age,
-                Profile.bio,
-                City.name.label('city'),
-                Profile.photo_url
-            ).select_from(
-                join(User, Profile, User.user_id == Profile.user_id)
-                .join(City, User.city_id == City.city_id)
-            ).where(User.user_id == user_id)
+            query = (
+                select(
+                    User.username,
+                    User.first_name,
+                    User.gender,
+                    User.age,
+                    Profile.bio,
+                    City.name.label('city'),
+                    Profile.photo_url,
+                )
+                .select_from(
+                    join(User, Profile, User.user_id == Profile.user_id).join(City, User.city_id == City.city_id)
+                )
+                .where(User.user_id == user_id)
+            )
 
             result = await session.execute(query)
             user = result.first()
@@ -103,7 +101,7 @@ async def get_user_info(user_id: int) -> Dict[str, Any]:
                     'age': user.age,
                     'bio': user.bio,
                     'city': user.city,
-                    'photo_url': user.photo_url
+                    'photo_url': user.photo_url,
                 }
             logger.error('User not found in database: %s', user_id)
             return {}
@@ -145,11 +143,7 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                     local_path = await download_from_presigned_url(user_info['photo_url'])
                     if local_path:
                         # Send photo with caption
-                        await bot.send_photo(
-                            chat_id=user_id,
-                            photo=local_path,
-                            caption=message
-                        )
+                        await bot.send_photo(chat_id=user_id, photo=local_path, caption=message)
 
                         # Clean up the temporary file
                         try:
@@ -158,21 +152,12 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                             logger.error('Error deleting temporary file: %s', e)
                     else:
                         logger.error('Failed to download photo for user %s', from_user_id)
-                        await bot.send_message(
-                            chat_id=user_id,
-                            text=message
-                        )
+                        await bot.send_message(chat_id=user_id, text=message)
                 except Exception as e:
                     logger.error('Error sending photo for user %s: %s', from_user_id, str(e))
-                    await bot.send_message(
-                        chat_id=user_id,
-                        text=message
-                    )
+                    await bot.send_message(chat_id=user_id, text=message)
             else:
-                await bot.send_message(
-                    chat_id=user_id,
-                    text=message
-                )
+                await bot.send_message(chat_id=user_id, text=message)
 
             logger.info('Notification sent to user %s about like from %s', user_id, from_user_id)
             await redis.srem(key, str(from_user_id))  # type: ignore

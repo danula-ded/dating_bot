@@ -17,9 +17,10 @@ async def set_commands(bot: Bot):
         BotCommand(command="profile", description="Просмотр анкеты"),
         BotCommand(command="edit_profile", description="Редактировать анкету"),
         BotCommand(command='delete_profile', description='Удалить свой профиль :('),
-        BotCommand(command="search", description="Начать поиск новых знакомств!")
+        BotCommand(command="search", description="Начать поиск новых знакомств!"),
     ]
     await bot.set_my_commands(commands)
+
 
 dp = Dispatcher(storage=RedisStorage(redis=redis_storage))
 default = DefaultBotProperties(parse_mode=ParseMode.HTML)

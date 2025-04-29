@@ -7,6 +7,7 @@ from consumer.model.meta import Base
 
 class City(Base):
     """Model for storing cities."""
+
     __tablename__ = 'cities'
 
     city_id = Column(Integer, primary_key=True)

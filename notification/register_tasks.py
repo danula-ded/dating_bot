@@ -1,2 +1,3 @@
 """Task registration module."""
-from notification.tasks import check_likes  # noqa 
+
+from notification.tasks import check_likes  # noqa

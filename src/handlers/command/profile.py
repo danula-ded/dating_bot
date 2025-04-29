@@ -85,11 +85,9 @@ async def display_profile(message: Message, user: UserInDB, profile: ProfileInDB
 
                         # Send photo with caption
                         await message.answer_photo(
-                            photo=FSInputFile(local_path),
-                            caption=text,
-                            reply_markup=keyboard.as_markup()
+                            photo=FSInputFile(local_path), caption=text, reply_markup=keyboard.as_markup()
                         )
-                        
+
                         # Clean up the temporary file
                         try:
                             os.unlink(local_path)
@@ -126,7 +124,7 @@ async def handle_edit_profile(callback: CallbackQuery, state: FSMContext) -> Non
     else:
         # If the message doesn't have text (e.g., it's a photo), send a new message
         await callback.message.answer('Что вы хотите изменить в профиле?', reply_markup=keyboard.as_markup())
-    
+
     await state.set_state(ProfileGroup.editing)
 
 

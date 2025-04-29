@@ -1,4 +1,5 @@
 """Database configuration for notification service."""
+
 from uuid import uuid4
 
 from asyncpg import Connection
@@ -12,6 +13,7 @@ from config.settings import settings
 
 class Base(DeclarativeBase):
     """Base class for all database models."""
+
     pass
 
 
@@ -30,7 +32,7 @@ def create_engine() -> AsyncEngine:
             'prepared_statement_cache_size': 0,
         },
         echo=True,
-        future=True
+        future=True,
     )
 
 
@@ -49,4 +51,4 @@ async_session = create_session(engine)
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as db:
-        yield db 
+        yield db

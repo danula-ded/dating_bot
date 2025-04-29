@@ -5,6 +5,7 @@ from config.settings import settings
 
 router = APIRouter()
 
+
 @router.get('/photo/{photo_path:path}')
 async def get_photo(photo_path: str) -> StreamingResponse:
     """
@@ -17,10 +18,9 @@ async def get_photo(photo_path: str) -> StreamingResponse:
             async with session.get(minio_url) as response:
                 if response.status != 200:
                     raise HTTPException(status_code=404, detail='Photo not found')
-                
+
                 return StreamingResponse(
-                    response.content,
-                    media_type=response.headers.get('Content-Type', 'image/jpeg')
+                    response.content, media_type=response.headers.get('Content-Type', 'image/jpeg')
                 )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))

@@ -1,4 +1,5 @@
 """Database models for notification service."""
+
 from sqlalchemy import BigInteger, Column, Integer, String, Text, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -8,6 +9,7 @@ from notification.storage.db import Base
 
 class City(Base):
     """City model for storing city information."""
+
     __tablename__ = 'cities'
 
     city_id = Column(Integer, primary_key=True)
@@ -19,6 +21,7 @@ class City(Base):
 
 class User(Base):
     """User model for storing user information."""
+
     __tablename__ = 'users'
 
     user_id = Column(BigInteger, primary_key=True)
@@ -35,6 +38,7 @@ class User(Base):
 
 class Profile(Base):
     """Profile model for storing user profile information."""
+
     __tablename__ = 'profiles'
 
     profile_id = Column(Integer, primary_key=True)
@@ -45,4 +49,4 @@ class Profile(Base):
     preferred_age_min = Column(Integer)
     preferred_age_max = Column(Integer)
 
-    user = relationship('User', back_populates='profile') 
+    user = relationship('User', back_populates='profile')

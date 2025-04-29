@@ -16,7 +16,7 @@ beat_schedule = {
     'check-likes-every-2-minutes': {
         'task': 'notification.tasks.check_likes',
         'schedule': 120.0,  # 2 minutes
-        'options': {'expires': 110}  # Task expires after 110 seconds
+        'options': {'expires': 110},  # Task expires after 110 seconds
     },
 }
 
@@ -37,4 +37,4 @@ broker_transport_options = {
     'visibility_timeout': 3600,
     'fanout_prefix': True,
     'fanout_patterns': True,
-} 
+}

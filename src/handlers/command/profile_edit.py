@@ -44,10 +44,7 @@ async def profile_edit(message: Message, state: FSMContext):
     builder.button(text='Предпочитаемый пол', callback_data='edit_preferred_gender')
     builder.adjust(2)
 
-    await message.answer(
-        'Что вы хотите изменить в профиле?',
-        reply_markup=builder.as_markup()
-    )
+    await message.answer('Что вы хотите изменить в профиле?', reply_markup=builder.as_markup())
 
 
 @router.callback_query(F.data == "edit_name")
@@ -146,11 +143,9 @@ async def process_name_edit(message: Message, state: FSMContext):
             update = UserUpdate(first_name=name)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': message.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'first_name'
-                    }),
+                    msgpack.packb(
+                        {'user_id': message.from_user.id, 'update': update.model_dump(), 'field': 'first_name'}
+                    ),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',
@@ -185,11 +180,7 @@ async def process_age_edit(message: Message, state: FSMContext):
             update = UserUpdate(age=age)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': message.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'age'
-                    }),
+                    msgpack.packb({'user_id': message.from_user.id, 'update': update.model_dump(), 'field': 'age'}),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',
@@ -217,11 +208,7 @@ async def process_gender_edit(callback: CallbackQuery, state: FSMContext):
             update = UserUpdate(gender=gender)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': callback.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'gender'
-                    }),
+                    msgpack.packb({'user_id': callback.from_user.id, 'update': update.model_dump(), 'field': 'gender'}),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',
@@ -252,11 +239,9 @@ async def process_city_edit(message: Message, state: FSMContext):
             update = UserUpdate(city_name=city_name)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': message.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'city_name'
-                    }),
+                    msgpack.packb(
+                        {'user_id': message.from_user.id, 'update': update.model_dump(), 'field': 'city_name'}
+                    ),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',
@@ -287,11 +272,7 @@ async def process_bio_edit(message: Message, state: FSMContext):
             update = UserUpdate(bio=bio)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': message.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'bio'
-                    }),
+                    msgpack.packb({'user_id': message.from_user.id, 'update': update.model_dump(), 'field': 'bio'}),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',
@@ -335,11 +316,9 @@ async def process_photo_edit(message: Message, state: FSMContext):
             update = UserUpdate(photo_url=file_path)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': message.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'photo_url'
-                    }),
+                    msgpack.packb(
+                        {'user_id': message.from_user.id, 'update': update.model_dump(), 'field': 'photo_url'}
+                    ),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',
@@ -367,11 +346,9 @@ async def process_preferred_gender_edit(callback: CallbackQuery, state: FSMConte
             update = UserUpdate(preferred_gender=gender)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': callback.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'preferred_gender'
-                    }),
+                    msgpack.packb(
+                        {'user_id': callback.from_user.id, 'update': update.model_dump(), 'field': 'preferred_gender'}
+                    ),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',
@@ -416,7 +393,7 @@ async def process_preferred_age_max_edit(message: Message, state: FSMContext):
 
     data = await state.get_data()
     min_age = data.get('preferred_age_min', 18)
-    
+
     if age < min_age:
         await message.reply("Maximum age must be greater than or equal to minimum age.")
         return
@@ -430,11 +407,9 @@ async def process_preferred_age_max_edit(message: Message, state: FSMContext):
             update = UserUpdate(preferred_age_min=min_age, preferred_age_max=age)
             await exchange.publish(
                 aio_pika.Message(
-                    msgpack.packb({
-                        'user_id': message.from_user.id,
-                        'update': update.model_dump(),
-                        'field': 'preferred_age_range'
-                    }),
+                    msgpack.packb(
+                        {'user_id': message.from_user.id, 'update': update.model_dump(), 'field': 'preferred_age_range'}
+                    ),
                     correlation_id=context.get(HeaderKeys.correlation_id),
                 ),
                 routing_key='user_updates',

@@ -30,7 +30,7 @@ async def handle_file_selection(callback: CallbackQuery) -> None:
 
         # Create InputFile from bytes
         input_file = InputFile(file_bytes, filename=file_name)
-        
+
         # Send file to user
         await callback.message.answer_document(input_file)
         await callback.answer('Файл успешно отправлен!')
