@@ -46,7 +46,7 @@ async def get_likes_for_user(user_id: int) -> List[int]:
     """Get all likes for a specific user from Redis."""
     redis = await get_redis()
     key = f'user:{user_id}:likes'
-    
+
     try:
         likes: set[str] = await redis.smembers(key)  # type: ignore
         logger.info('Found %d likes for user %s', len(likes), user_id)
@@ -94,7 +94,7 @@ async def get_user_info(user_id: int) -> Dict[str, Any]:
 
             result = await session.execute(query)
             user = result.first()
-            
+
             if user:
                 return {
                     'username': user.username,
@@ -116,19 +116,19 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
     """Send notification to user about new likes."""
     redis = await get_redis()
     key = f'user:{user_id}:likes'
-    
+
     try:
         if not likes:
             logger.info('No likes to process for user %s', user_id)
             return
-            
+
         for from_user_id in likes:
             user_info = await get_user_info(from_user_id)
-            
+
             if not user_info:
                 logger.warning('User info not found for like from user %s', from_user_id)
                 continue
-                
+
             message = (
                 f'👤 Профиль пользователя:\n\n'
                 f'Имя: {user_info["first_name"]}\n'
@@ -136,9 +136,9 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                 f'Возраст: {user_info["age"]}\n'
                 f'Город: {user_info["city"]}\n'
                 f'О себе: {user_info["bio"]}\n'
-                f'Username: @{user_info["username"]}\n\n'
+                f'Username: {user_info["username"]}\n\n'
             )
-            
+
             if user_info.get('photo_url'):
                 try:
                     # Download the photo from the presigned URL
@@ -150,7 +150,7 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                             photo=local_path,
                             caption=message
                         )
-                        
+
                         # Clean up the temporary file
                         try:
                             os.unlink(local_path)
@@ -173,11 +173,11 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
                     chat_id=user_id,
                     text=message
                 )
-            
+
             logger.info('Notification sent to user %s about like from %s', user_id, from_user_id)
             await redis.srem(key, str(from_user_id))  # type: ignore
             logger.info('Removed processed like from user %s', from_user_id)
-        
+
     except Exception as e:
         logger.error('Error sending notification to user %s: %s', user_id, str(e))
     finally:
@@ -188,27 +188,27 @@ async def send_notification(user_id: int, likes: List[int]) -> None:
 def check_likes(self) -> None:
     """Check for new likes and send notifications."""
     logger.info('Starting check_likes task')
-    
+
     async def _check_likes() -> None:
         redis = await get_redis()
         try:
             user_keys = await redis.keys('user:*:likes')
             logger.info('Found %d users with likes', len(user_keys))
-            
+
             for key in user_keys:
                 user_id = int(key.split(':')[1])
                 logger.info('Processing likes for user %s', user_id)
-                
+
                 likes = await get_likes_for_user(user_id)
                 if likes:
                     await send_notification(user_id, likes)
-                    
+
         except Exception as e:
             logger.error('Error in check_likes task: %s', str(e))
             raise
         finally:
-            await redis.close() 
-    
+            await redis.close()
+
     # Run the async function in an event loop
     loop = asyncio.get_event_loop()
     loop.run_until_complete(_check_likes())

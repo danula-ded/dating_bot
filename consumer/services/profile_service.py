@@ -52,7 +52,7 @@ async def load_and_store_matching_profiles(
                 (Rating.profile_score + Rating.activity_score)
                 * case(
                     # Множитель за совпадение пола
-                    (User.gender == preferred_gender, 2),
+                    (User.gender == preferred_gender, 4),
                     else_=1,
                 )
                 * case(
@@ -67,12 +67,10 @@ async def load_and_store_matching_profiles(
                             User.age >= preferred_age_min,
                             User.age <= preferred_age_max,
                         ),
-                        2,
+                        3,
                     ),
                     else_=1,
                 )
-                # Добавляем случайный множитель для разнообразия (от 0.8 до 1.2)
-                * (0.8 + func.random() * 0.4)
             ).label('total_score'),
         )
         .join(User, Profile.user_id == User.user_id)

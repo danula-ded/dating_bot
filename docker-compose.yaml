@@ -74,7 +74,7 @@ services:
     image: prom/prometheus
     container_name: prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus_config.yml"
+      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -160,11 +160,34 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "celery", "-A", "notification.tasks", "inspect", "ping", "-d", "celery@$$HOSTNAME"]
+      test:
+        [
+          "CMD",
+          "celery",
+          "-A",
+          "notification.tasks",
+          "inspect",
+          "ping",
+          "-d",
+          "celery@$$HOSTNAME",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Устанавливаем пароль администратора
+    ports:
+      - "3000:3000" # Порты для доступа к интерфейсу Grafana
+    volumes:
+      - grafana-storage:/var/lib/grafana # Для хранения данных Grafana
+    depends_on:
+      - prometheus # Добавляем зависимость от Prometheus, если используется
+
 volumes:
   postgres_data:
   minio_data:
+  grafana-storage: {}

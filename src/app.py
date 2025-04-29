@@ -14,7 +14,7 @@ from src.api.minio.minio import router as minio_router
 from src.api.tech.router import router
 from src.api.tg.router import router as tg_router
 from src.bg_tasks import background_tasks
-from src.bot import bot, dp
+from src.bot import bot, dp, setup_bot
 from src.logger import LOGGING_CONFIG, logger
 from src.routes.photo import router as photo_router
 from src.storage.minio_client import create_bucket
@@ -44,6 +44,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if settings.BOT_WEBHOOK_URL and wh_info.url != settings.BOT_WEBHOOK_URL:
         await bot.set_webhook(settings.BOT_WEBHOOK_URL)
     else:
+        # Устанавливаем команды бота перед запуском
+        await setup_bot()
         polling_task = asyncio.create_task(dp.start_polling(bot, handle_signals=False))
 
     logger.info('Finished start')

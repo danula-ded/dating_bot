@@ -39,7 +39,7 @@ async def handle_text_message(message: types.Message, state: FSMContext) -> None
             return
         await state.update_data(age=age)
         await state.set_state(AuthGroup.registration_gender)
-        await message.reply('Выберите ваш пол:\n1. Мужской\n2. Женский\n3. Другой\nВведите номер варианта:')
+        await message.reply('Выберите ваш пол:\n1. Мужской\n2. Женский\nВведите номер варианта:')
 
     elif current_state == AuthGroup.registration_gender.state:
         gender_map = {'1': 'male', '2': 'female', '3': 'other'}
@@ -59,7 +59,7 @@ async def handle_text_message(message: types.Message, state: FSMContext) -> None
         await state.update_data(bio=message.text)
         await state.set_state(AuthGroup.registration_preferred_gender)
         await message.reply(
-            'Выберите предпочитаемый пол для знакомств:\n1. Мужской\n2. Женский\n3. Другой\nВведите номер варианта:'
+            'Выберите предпочитаемый пол для знакомств:\n1. Мужской\n2. Женский\nВведите номер варианта:'
         )
 
     elif current_state == AuthGroup.registration_preferred_gender.state:
